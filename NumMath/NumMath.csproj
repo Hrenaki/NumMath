@@ -46,6 +46,7 @@
     <Compile Include="DiagMatrix.cs" />
     <Compile Include="FullMatrix.cs" />
     <Compile Include="GaussSolver.cs" />
+    <Compile Include="InterpolationSpline.cs" />
     <Compile Include="JacobiSolver.cs" />
     <Compile Include="LDLTSolver.cs" />
     <Compile Include="Matrix.cs" />
