@@ -13,6 +13,14 @@ namespace NumMath
         public int size { get; private set; }
         public int diagCount { get; private set; }
         public int mainDiagSize { get; private set; }
+        public double this[int i, int j]
+        {
+            get
+            {
+                int diagIndex = Array.IndexOf(offsets, j - i);
+                return diagIndex == -1 ? 0 : values[diagIndex, i];
+            }
+        }
         public DiagMatrix(int size, int[] diagOffsets, double[,] values)
         {
             this.size = size;

@@ -41,21 +41,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CGMSolver.cs" />
-    <Compile Include="DiagMatrix.cs" />
-    <Compile Include="EigenValues.cs" />
-    <Compile Include="FullMatrix.cs" />
-    <Compile Include="GaussSolver.cs" />
-    <Compile Include="InterpolationSpline.cs" />
-    <Compile Include="JacobiSolver.cs" />
-    <Compile Include="LDLTSolver.cs" />
-    <Compile Include="Matrix.cs" />
-    <Compile Include="ProfileMatrix.cs" />
+    <Compile Include="Solvers\CGMSolver.cs" />
+    <Compile Include="Matrices\DiagMatrix.cs" />
+    <Compile Include="Matrices\EigenValues.cs" />
+    <Compile Include="Matrices\FullMatrix.cs" />
+    <Compile Include="Solvers\GaussSolver.cs" />
+    <Compile Include="Splines\InterpolationSpline.cs" />
+    <Compile Include="Solvers\JacobiSolver.cs" />
+    <Compile Include="Solvers\LDLTSolver.cs" />
+    <Compile Include="Matrices\Matrix.cs" />
+    <Compile Include="Matrices\ProfileMatrix.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SeidelSolver.cs" />
-    <Compile Include="Solver.cs" />
-    <Compile Include="SparseMatrix.cs" />
-    <Compile Include="Vector.cs" />
+    <Compile Include="Solvers\SeidelSolver.cs" />
+    <Compile Include="Solvers\Solver.cs" />
+    <Compile Include="Matrices\SparseMatrix.cs" />
+    <Compile Include="Vectors\Vector.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

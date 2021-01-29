@@ -11,6 +11,20 @@ namespace NumMath
         public double[] di, ggl, ggu;
         public int[] ig, jg;
         public int size { get; private set; }
+        public double this[int i, int j]
+        {
+            get
+            {
+                if (i != j)
+                {
+                    for (int k = ig[i]; k < ig[i + 1]; k++)
+                        if (jg[k] == j)
+                            return i < j ? ggu[k] : ggl[k];
+                    return 0;
+                }
+                else return di[i];
+            }
+        }
         public SparseMatrix(int size, int[] ig, int[] jg, double[] di, double[] ggu, double[] ggl)
         {
             this.size = size;
