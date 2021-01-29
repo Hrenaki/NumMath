@@ -40,5 +40,51 @@ namespace NumMath
                 v[i] = i + 1;
             return v;
         }
+        public static Vector operator+(Vector lhs, Vector rhs)
+        {
+            if (lhs.size != rhs.size)
+                throw new ArgumentOutOfRangeException();
+            Vector res = new Vector(lhs.size);
+            for (int i = 0; i < res.size; i++)
+                res[i] = lhs[i] + rhs[i];
+            return res;
+        }
+        public static void Sum(Vector lhs, Vector rhs)
+        {
+            if (lhs.size != rhs.size)
+                throw new ArgumentOutOfRangeException();
+            for (int i = 0; i < lhs.size; i++)
+                lhs[i] += rhs[i];
+        }
+        public static Vector operator-(Vector lhs, Vector rhs)
+        {
+            if (lhs.size != rhs.size)
+                throw new ArgumentOutOfRangeException();
+            Vector res = new Vector(lhs.size);
+            for (int i = 0; i < res.size; i++)
+                res[i] = lhs[i] - rhs[i];
+            return res;
+        }
+        public static void Sub(Vector lhs, Vector rhs)
+        {
+            if (lhs.size != rhs.size)
+                throw new ArgumentOutOfRangeException();
+            for (int i = 0; i < lhs.size; i++)
+                lhs[i] -= rhs[i];
+        }
+        public static Vector operator*(double w, Vector vec)
+        {
+            Vector res = new Vector(vec.size);
+            for (int i = 0; i < vec.size; i++)
+                res[i] = w * vec[i];
+            return res;
+        }
+        public static Vector operator/(Vector vec, double w)
+        {
+            Vector res = new Vector(vec.size);
+            for (int i = 0; i < res.size; i++)
+                res[i] = vec[i] / w;
+            return res;
+        }
     }
 }
