@@ -6,15 +6,9 @@ using System.Threading.Tasks;
 
 namespace NumMath
 {
-    public partial class SoLESolver
+    public static partial class SoLESolver
     {
-        private readonly int maxSteps = 1000;
-        public Matrix matrix { get; private set; }
-        public Vector vec { get; private set; }
-        public SoLESolver(Matrix mat, Vector vec)
-        {
-            matrix = mat;
-            this.vec = vec;
-        }
+        public static int MaxSteps = 1000;
+        public static double Epsilon = 1E-10;
     }
 }

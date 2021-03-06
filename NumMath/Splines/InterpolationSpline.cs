@@ -96,8 +96,8 @@ namespace NumMath
             Vector vec = new Vector(coeffs);
             Vector x = new Vector(coeffs.Length);
 
-            SoLESolver solver = new SoLESolver(matrix, vec);
-            solver.SolveSeidel(x, 1E-12, 1.5);
+            SoLESolver.Epsilon = 1E-12;
+            SoLESolver.SolveSeidel(matrix, vec, x, 1.5);
         }
 
         public double getValue(double x)
