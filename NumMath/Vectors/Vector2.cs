@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NumMath.Vectors
+namespace NumMath
 {
     public class Vector2 : Vector
     {

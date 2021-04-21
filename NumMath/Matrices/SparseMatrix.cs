@@ -44,51 +44,55 @@ namespace NumMath
                 ggu.Split(' ').Select(value => double.Parse(value)).ToArray(),
                 ggl.Split(' ').Select(value => double.Parse(value)).ToArray());
         }
-        public ProfileMatrix Cast<T>()
+        public Matrix Cast<T>()
         {
-            int i, j, k;
-            double[] profile_di = new double[size];
-            int[] profile_ia = new int[size + 1];
-            List<double> profile_au = new List<double>();
-            List<double> profile_al = new List<double>();
-
-            ProfileMatrix newMatrix = new ProfileMatrix(size, profile_ia, profile_di, null, null);
-
-            for (i = 0; i < size; i++)
-                profile_di[i] = di[i];
-
-            for(i = 0; i < size; i++)
+            if (typeof(T) == typeof(ProfileMatrix))
             {
-                profile_ia[i + 1] = profile_ia[i];
-                for(j = ig[i]; j < ig[i + 1]; j++)
-                {
-                    profile_al.Add(ggl[j]);
-                    profile_au.Add(ggu[j]);
-                    profile_ia[i + 1]++;
+                int i, j, k;
+                double[] profile_di = new double[size];
+                int[] profile_ia = new int[size + 1];
+                List<double> profile_au = new List<double>();
+                List<double> profile_al = new List<double>();
 
-                    if(jg[j] + 1 != jg[j + 1])
+                ProfileMatrix newMatrix = new ProfileMatrix(size, profile_ia, profile_di, null, null);
+
+                for (i = 0; i < size; i++)
+                    profile_di[i] = di[i];
+
+                for (i = 0; i < size; i++)
+                {
+                    profile_ia[i + 1] = profile_ia[i];
+                    for (j = ig[i]; j < ig[i + 1]; j++)
                     {
-                        k = jg[j];
-                        while(k < jg[j + 1])
+                        profile_al.Add(ggl[j]);
+                        profile_au.Add(ggu[j]);
+                        profile_ia[i + 1]++;
+
+                        if (jg[j] + 1 != jg[j + 1])
                         {
-                            profile_al.Add(0.0);
-                            profile_al.Add(0.0);
-                            profile_ia[i + 1]++;
-                            k++;
+                            k = jg[j];
+                            while (k < jg[j + 1])
+                            {
+                                profile_al.Add(0.0);
+                                profile_al.Add(0.0);
+                                profile_ia[i + 1]++;
+                                k++;
+                            }
                         }
                     }
+                    for (; j < i; j++)
+                    {
+                        profile_al.Add(0.0);
+                        profile_au.Add(0.0);
+                        profile_ia[i + 1]++;
+                    }
                 }
-                for(; j < i; j++)
-                {
-                    profile_al.Add(0.0);
-                    profile_au.Add(0.0);
-                    profile_ia[i + 1]++;
-                }
-            }
 
-            newMatrix.al = profile_al.ToArray();
-            newMatrix.au = profile_au.ToArray();
-            return newMatrix;
+                newMatrix.al = profile_al.ToArray();
+                newMatrix.au = profile_au.ToArray();
+                return newMatrix;
+            }
+            return null;
         }
         public static Vector operator *(SparseMatrix mat, Vector vec)
         {
@@ -161,6 +165,35 @@ namespace NumMath
                 jg.Split(' ').Select(value => int.Parse(value)).ToArray(),
                 di.Split(' ').Select(value => double.Parse(value.Replace(".", ","))).ToArray(),
                 gg.Split(' ').Select(value => double.Parse(value.Replace(".", ","))).ToArray());
+        }
+        public Matrix Cast<T>()
+        {
+            if(typeof(T) == typeof(SparseMatrix))
+            {
+                int i, j;
+                
+                double[] newMatrix_di = new double[size];
+                int[] newMatrix_ig = new int[size + 1];
+                int[] newMatrix_jg = new int[jg.Length];
+                double[] newMatrix_ggl = new double[gg.Length];
+                double[] newMatrix_ggu = new double[gg.Length];
+
+                SparseMatrix newMatrix = new SparseMatrix(size, newMatrix_ig, newMatrix_jg, newMatrix_di, newMatrix_ggu, newMatrix_ggl);
+                for(i = 0; i < size; i++)
+                {
+                    newMatrix_ig[i + 1] = ig[i + 1];
+                    newMatrix_di[i] = di[i];
+
+                    for (j = ig[i]; j < ig[i + 1]; j++)
+                    {
+                        newMatrix_ggl[j] = gg[j];
+                        newMatrix_ggu[j] = gg[j];
+                        newMatrix_jg[j] = jg[j];
+                    }
+                }
+                return newMatrix;
+            }
+            return null;
         }
         public static Vector operator *(SymmSparseMatrix mat, Vector vec)
         {

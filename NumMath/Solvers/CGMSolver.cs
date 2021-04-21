@@ -78,7 +78,7 @@ namespace NumMath
                     curNorm += rk[i] * rk[i];
                 }
 
-                Console.WriteLine("X" + step + " = " + start.ToString() + ". Residual^2 = " + Math.Sqrt(curNorm / norm).ToString("E4"));
+                //Console.WriteLine("X" + step + " = " + start.ToString() + ". Residual^2 = " + Math.Sqrt(curNorm / norm).ToString("E4"));
 
                 // b_k = (r_k, r_k) / (r_k-1, r_k-1)
                 bk = curNorm / prevNorm;
@@ -161,8 +161,7 @@ namespace NumMath
                 }
                 curNorm = denominator;
 
-                Console.WriteLine("X" + step + " = " + start.ToString() + 
-                    ". Residual = " + Math.Sqrt(curNorm / norm).ToString("E4"));
+                //Console.WriteLine("X" + step + " = " + start.ToString() + ". Residual = " + Math.Sqrt(curNorm / norm).ToString("E4"));
 
                 // b_k
                 denominator = 0; // (M^(-1) * r_k, r_k)
@@ -305,7 +304,7 @@ namespace NumMath
                     curNorm += rk[i] * rk[i];
                 }
 
-                Console.WriteLine("X" + step + " = " + start.ToString() + ". Residual^2 = " + Math.Sqrt(curNorm / norm).ToString("E4"));
+                //Console.WriteLine("X" + step + " = " + start.ToString() + ". Residual^2 = " + Math.Sqrt(curNorm / norm).ToString("E4"));
 
                 // q = M^(-1) * r_k => LLT * q = r_k
                 for (i = 0; i < size; i++)
