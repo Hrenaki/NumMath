@@ -86,5 +86,10 @@ namespace NumMath
                 res[i] = vec[i] / w;
             return res;
         }
+        public void ClearValues()
+        {
+            for (int i = 0; i < size; i++)
+                values[i] = 0;
+        }
     }
 }

@@ -44,6 +44,52 @@ namespace NumMath
                 ggu.Split(' ').Select(value => double.Parse(value)).ToArray(),
                 ggl.Split(' ').Select(value => double.Parse(value)).ToArray());
         }
+        public ProfileMatrix Cast<T>()
+        {
+            int i, j, k;
+            double[] profile_di = new double[size];
+            int[] profile_ia = new int[size + 1];
+            List<double> profile_au = new List<double>();
+            List<double> profile_al = new List<double>();
+
+            ProfileMatrix newMatrix = new ProfileMatrix(size, profile_ia, profile_di, null, null);
+
+            for (i = 0; i < size; i++)
+                profile_di[i] = di[i];
+
+            for(i = 0; i < size; i++)
+            {
+                profile_ia[i + 1] = profile_ia[i];
+                for(j = ig[i]; j < ig[i + 1]; j++)
+                {
+                    profile_al.Add(ggl[j]);
+                    profile_au.Add(ggu[j]);
+                    profile_ia[i + 1]++;
+
+                    if(jg[j] + 1 != jg[j + 1])
+                    {
+                        k = jg[j];
+                        while(k < jg[j + 1])
+                        {
+                            profile_al.Add(0.0);
+                            profile_al.Add(0.0);
+                            profile_ia[i + 1]++;
+                            k++;
+                        }
+                    }
+                }
+                for(; j < i; j++)
+                {
+                    profile_al.Add(0.0);
+                    profile_au.Add(0.0);
+                    profile_ia[i + 1]++;
+                }
+            }
+
+            newMatrix.al = profile_al.ToArray();
+            newMatrix.au = profile_au.ToArray();
+            return newMatrix;
+        }
         public static Vector operator *(SparseMatrix mat, Vector vec)
         {
             int size = mat.size;

@@ -69,5 +69,11 @@ namespace NumMath
                     res[j] += x[k] * values[i, j];
             return res;
         }
+        public void ClearValues()
+        {
+            for(int i = 0; i < offsets.Length; i++)
+                for (int j = 0; j < size; j++)
+                    values[i, j] = 0.0;
+        }
     }
 }

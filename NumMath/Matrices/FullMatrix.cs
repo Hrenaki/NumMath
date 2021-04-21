@@ -8,7 +8,7 @@ namespace NumMath
 {
     public class FullMatrix : Matrix
     {
-        private double[,] values;
+        public double[,] values;
         public int size { get; private set; }
         public double this[int i, int j]
         {
@@ -19,6 +19,11 @@ namespace NumMath
         {
             this.size = size;
             values = new double[size, size];
+        }
+        public FullMatrix(double[,] values)
+        {
+            this.size = values.Length / 2;
+            this.values = values;
         }
         public static FullMatrix Parse(string str)
         {
