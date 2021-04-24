@@ -181,7 +181,7 @@ namespace NumMath
                 }
 
                 // backward
-                for(i = size - 1; i >= 0; i--)
+                for(i = size - 1; i > 0; i--)
                 {
                     for (j = ig[i]; j < ig[i + 1]; j++)
                         y[jg[j]] -= ggu_lu[j] * y[i];

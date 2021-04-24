@@ -47,6 +47,7 @@
     <Compile Include="Matrices\EigenValues.cs" />
     <Compile Include="Matrices\FullMatrix.cs" />
     <Compile Include="Solvers\GaussSolver.cs" />
+    <Compile Include="Solvers\LUSolver.cs" />
     <Compile Include="Splines\InterpolationSpline.cs" />
     <Compile Include="Solvers\JacobiSolver.cs" />
     <Compile Include="Solvers\LDLTSolver.cs" />
