@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Solvers\BSGSolver.cs" />
+    <Compile Include="Solvers\BiCGMSolver.cs" />
     <Compile Include="Solvers\CGMSolver.cs" />
     <Compile Include="Matrices\DiagMatrix.cs" />
     <Compile Include="Matrices\EigenValues.cs" />
