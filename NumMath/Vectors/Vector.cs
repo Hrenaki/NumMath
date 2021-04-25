@@ -86,6 +86,17 @@ namespace NumMath
                 res[i] = vec[i] / w;
             return res;
         }
+        public double Distance(Vector to)
+        {
+            if (size != to.size)
+                throw new Exception();
+
+            double distance = 0;
+            double[] to_values = to.values;
+            for (int i = 0; i < size; i++)
+                distance += (values[i] - to_values[i]) * (values[i] - to_values[i]);
+            return distance;
+        }
         public void ClearValues()
         {
             for (int i = 0; i < size; i++)

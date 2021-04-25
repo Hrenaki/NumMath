@@ -21,5 +21,10 @@ namespace NumMath
             values[0] = x;
             values[1] = y;
         }
+        public Vector2(double[] t) : base(t) { }
+        public double Distance(Vector2 to)
+        {
+            return (values[0] - to.values[0]) * (values[0] - to.values[0]) + (values[1] - to.values[1]) * (values[1] - to.values[1]);
+        }
     }
 }
