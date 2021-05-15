@@ -52,8 +52,4 @@ namespace NumMath
                     b[i - (ia[i + 1] - j)] -= b[i] * au[j];
         }
     }
-
-
-
-
 }

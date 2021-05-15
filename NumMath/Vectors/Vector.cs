@@ -25,9 +25,20 @@ namespace NumMath
         {
             this.values = values;
         }
+        public Vector(Vector source)
+        {
+            int size = source.size;
+            values = new double[size];
+            for (int i = 0; i < size; i++)
+                values[i] = source[i];
+        }
         public override string ToString()
         {
             return string.Join(" ", values.Select(value => value.ToString("F2")));
+        }
+        public string ToString(string format)
+        {
+            return string.Join(" ", values.Select(t => t.ToString(format)));
         }
         public static Vector Parse(string text)
         {
@@ -85,6 +96,11 @@ namespace NumMath
             for (int i = 0; i < res.size; i++)
                 res[i] = vec[i] / w;
             return res;
+        }
+        public void Copy(Vector source)
+        {
+            for (int i = 0; i < Math.Min(source.size, size); i++)
+                values[i] = source[i];
         }
         public double Distance(Vector to)
         {

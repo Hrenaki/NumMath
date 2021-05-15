@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,6 @@ namespace NumMath
     {
         public double[] di, au, al;
         public int[] ia;
-        public int size { get; private set; }
         public double this[int i, int j]
         {
             get 
@@ -28,9 +28,8 @@ namespace NumMath
             }
         }
 
-        public ProfileMatrix(int size, int[] ia, double[] di, double[] au, double[] al)
+        public ProfileMatrix(int size, int[] ia, double[] di, double[] au, double[] al) : base(size)
         {
-            this.size = size;
             this.ia = ia;
             this.di = di;
             this.au = au;
@@ -66,6 +65,20 @@ namespace NumMath
             }
             return res;
         }
+        public void PrintPotrait()
+        {
+            int i, j;
+            string str = "";
+            for(i = 0; i < size; i++)
+            {
+                for (j = 0; j < i - ia[i + 1] + ia[i]; j++)
+                    str += "0 ";
+                for (j = ia[i]; j < ia[i + 1]; j++)
+                    str += "* ";
+                str += "*\n";
+            }
+            File.WriteAllText("text2.txt", str);
+        }
         public override string ToString()
         {
             string text = "";
@@ -90,15 +103,37 @@ namespace NumMath
             }
             return text;
         }
+        public string ToString(string format = "E2")
+        {
+            string text = "";
+            int i, j, k;
+            for (i = 0; i < size; i++)
+            {
+                for (j = 0; j < i - ia[i + 1] + ia[i]; j++)
+                    text += 0.ToString(format) + " ";
+                for (j = ia[i]; j < ia[i + 1]; j++)
+                    text += au[j].ToString(format) + " ";
+                text += di[i].ToString(format) + " ";
+                for (j = i + 1; j < size; j++)
+                    for (k = ia[j]; k < ia[j + 1]; k++)
+                    {
+                        if (j - ia[j + 1] + k >= j)
+                        {
+                            text += (j - ia[j + 1] + k == j ? al[k] : 0).ToString(format) + " ";
+                            break;
+                        }
+                    }
+                text += '\n';
+            }
+            return text;
+        }
     }
     public class SymmProfileMatrix : Matrix
     {
         public double[] di, a;
         public int[] ia;
-        public int size { get; private set; }
-        public SymmProfileMatrix(int size, int[] ia, double[] di, double[] a)
+        public SymmProfileMatrix(int size, int[] ia, double[] di, double[] a) : base(size)
         {
-            this.size = size;
             this.ia = ia;
             this.di = di;
             this.a = a;
@@ -132,15 +167,39 @@ namespace NumMath
                 {
                     if (j > i)
                     {
-                        text += (j - i <= ia[j + 1] - ia[j] ? a[ia[j + 1] - j + i] : 0).ToString("F2") + ' ';
+                        text += (j - i <= ia[j + 1] - ia[j] ? a[ia[j + 1] - j + i] : 0).ToString("E2") + ' ';
                     }
                     else if (i == j)
                     {
-                        text += di[i].ToString("F2") + ' ';
+                        text += di[i].ToString("E2") + ' ';
                     }
                     else
                     {
-                        text += (i - j <= ia[i + 1] - ia[i] ? a[ia[i + 1] - i + j] : 0).ToString("F2") + ' ';
+                        text += (i - j <= ia[i + 1] - ia[i] ? a[ia[i + 1] - i + j] : 0).ToString("E2") + ' ';
+                    }
+                }
+                text += '\n';
+            }
+            return text;
+        }
+        public string ToString(string format = "E2")
+        {
+            string text = "";
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    if (j > i)
+                    {
+                        text += (j - i <= ia[j + 1] - ia[j] ? a[ia[j + 1] - j + i] : 0).ToString(format) + ' ';
+                    }
+                    else if (i == j)
+                    {
+                        text += di[i].ToString(format) + ' ';
+                    }
+                    else
+                    {
+                        text += (i - j <= ia[i + 1] - ia[i] ? a[ia[i + 1] - i + j] : 0).ToString(format) + ' ';
                     }
                 }
                 text += '\n';

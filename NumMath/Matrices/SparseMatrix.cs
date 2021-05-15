@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,6 @@ namespace NumMath
     {
         public double[] di, ggl, ggu;
         public int[] ig, jg;
-        public int size { get; private set; }
         public double this[int i, int j]
         {
             get
@@ -25,9 +25,8 @@ namespace NumMath
                 else return di[i];
             }
         }
-        public SparseMatrix(int size, int[] ig, int[] jg, double[] di, double[] ggu, double[] ggl)
+        public SparseMatrix(int size, int[] ig, int[] jg, double[] di, double[] ggu, double[] ggl) : base(size)
         {
-            this.size = size;
             this.ig = ig;
             this.jg = jg;
             this.di = di;
@@ -44,7 +43,7 @@ namespace NumMath
                 ggu.Split(' ').Select(value => double.Parse(value)).ToArray(),
                 ggl.Split(' ').Select(value => double.Parse(value)).ToArray());
         }
-        public Matrix Cast<T>()
+        public T Cast<T>() where T : Matrix
         {
             if (typeof(T) == typeof(ProfileMatrix))
             {
@@ -62,37 +61,68 @@ namespace NumMath
                 for (i = 0; i < size; i++)
                 {
                     profile_ia[i + 1] = profile_ia[i];
-                    for (j = ig[i]; j < ig[i + 1]; j++)
+                    
+                    if(ig[i + 1] - ig[i] > 0)
                     {
-                        profile_al.Add(ggl[j]);
-                        profile_au.Add(ggu[j]);
-                        profile_ia[i + 1]++;
-
-                        if (jg[j] + 1 != jg[j + 1])
+                        for(j = ig[i]; j < ig[i + 1] - 1; j++)
                         {
+                            profile_al.Add(ggl[j]);
+                            profile_au.Add(ggu[j]);
+                            profile_ia[i + 1]++;
+
                             k = jg[j];
-                            while (k < jg[j + 1])
+                            while(k < jg[j + 1] - 1)
                             {
                                 profile_al.Add(0.0);
-                                profile_al.Add(0.0);
+                                profile_au.Add(0.0);
                                 profile_ia[i + 1]++;
                                 k++;
                             }
                         }
-                    }
-                    for (; j < i; j++)
-                    {
-                        profile_al.Add(0.0);
-                        profile_au.Add(0.0);
+
+                        profile_al.Add(ggl[j]);
+                        profile_au.Add(ggu[j]);
                         profile_ia[i + 1]++;
+
+                        k = jg[j];
+                        while(k < i - 1)
+                        {
+                            profile_al.Add(0.0);
+                            profile_au.Add(0.0);
+                            profile_ia[i + 1]++;
+                            k++;
+                        }
                     }
                 }
 
                 newMatrix.al = profile_al.ToArray();
                 newMatrix.au = profile_au.ToArray();
-                return newMatrix;
+                return newMatrix as T;
             }
             return null;
+        }
+        public void PrintPortait()
+        {
+            string str = "";
+            int k = 0;
+            int j;
+            for(int i = 0; i < size; i++)
+            {
+                for(k = 0; k < i; k++)
+                {
+                    for(j = ig[i]; j < ig[i + 1]; j++)
+                        if(jg[j] == k)
+                        {
+                            str += "* ";
+                            break;
+                        }
+                    if (j == ig[i + 1])
+                        str += "0 ";
+                }
+                str += "*\n";
+            }
+
+            File.WriteAllText("text.txt", str);
         }
         public static Vector operator *(SparseMatrix mat, Vector vec)
         {
@@ -143,15 +173,39 @@ namespace NumMath
             }
             return text;
         }
+        public string ToString(string format = "E2")
+        {
+            string text = "";
+            int i, j, k;
+
+            for (i = 0; i < size; i++)
+            {
+                for (j = 0; j < jg[i]; j++)
+                    text += 0.ToString(format) + " ";
+                for (j = ig[i]; j < ig[i + 1]; j++)
+                {
+                    text += ggl[j].ToString(format) + " ";
+                    for (k = jg[j]; k < jg[j + 1]; k++)
+                        text += 0.ToString(format) + " ";
+                }
+                for (j = i + 1; j < size; j++)
+                {
+                    for (k = ig[j]; k < ig[j + 1]; k++)
+                        if (jg[k] == i)
+                            break;
+                    text += (k == ig[j + 1] ? 0 : ggu[k]).ToString(format) + " ";
+                }
+                text += '\n';
+            }
+            return text;
+        }
     }
     public class SymmSparseMatrix : Matrix
     {
         public double[] di, gg;
         public int[] ig, jg;
-        public int size { get; private set; }
-        public SymmSparseMatrix(int size, int[] ig, int[] jg, double[] di, double[] gg)
+        public SymmSparseMatrix(int size, int[] ig, int[] jg, double[] di, double[] gg) : base(size)
         {
-            this.size = size;
             this.ig = ig;
             this.jg = jg;
             this.di = di;
@@ -217,6 +271,16 @@ namespace NumMath
             }
             return result;
         }
+        public void ClearValues()
+        {
+            int i, j;
+            for(i = 0; i < size; i++)
+            {
+                di[i] = 0;
+                for (j = ig[i]; j < ig[i + 1]; j++)
+                    gg[j] = 0;
+            }
+        }
         public override string ToString()
         {
             string text = "";
@@ -238,6 +302,32 @@ namespace NumMath
                         if (jg[k] == i)
                             break;
                     text += (k == ig[j + 1] ? 0 : gg[k]).ToString("E2") + " ";
+                }
+                text += '\n';
+            }
+            return text;
+        }
+        public string ToString(string format = "E2")
+        {
+            string text = "";
+            int i, j, k;
+
+            for (i = 0; i < size; i++)
+            {
+                for (j = 0; j < jg[i]; j++)
+                    text += 0.ToString(format) + " ";
+                for (j = ig[i]; j < ig[i + 1]; j++)
+                {
+                    text += gg[j].ToString(format) + " ";
+                    for (k = jg[j]; k < jg[j + 1]; k++)
+                        text += 0.ToString(format) + " ";
+                }
+                for (j = i + 1; j < size; j++)
+                {
+                    for (k = ig[j]; k < ig[j + 1]; k++)
+                        if (jg[k] == i)
+                            break;
+                    text += (k == ig[j + 1] ? 0 : gg[k]).ToString(format) + " ";
                 }
                 text += '\n';
             }

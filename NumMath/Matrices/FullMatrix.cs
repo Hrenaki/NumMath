@@ -9,20 +9,17 @@ namespace NumMath
     public class FullMatrix : Matrix
     {
         public double[,] values;
-        public int size { get; private set; }
         public double this[int i, int j]
         {
             get { return values[i, j]; }
             set { values[i, j] = value; }
         }
-        public FullMatrix(int size)
+        public FullMatrix(int size) : base(size)
         {
-            this.size = size;
             values = new double[size, size];
         }
-        public FullMatrix(double[,] values)
+        public FullMatrix(double[,] values) : base(values.Length / 2)
         {
-            this.size = values.Length / 2;
             this.values = values;
         }
         public static FullMatrix Parse(string str)
@@ -57,6 +54,17 @@ namespace NumMath
             {
                 for (int j = 0; j < size; j++)
                     text += values[i, j].ToString("E2") + " ";
+                text += '\n';
+            }
+            return text;
+        }
+        public string ToString(string format = "E2")
+        {
+            string text = "";
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                    text += values[i, j].ToString(format) + " ";
                 text += '\n';
             }
             return text;

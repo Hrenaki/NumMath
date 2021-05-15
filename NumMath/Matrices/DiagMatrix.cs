@@ -10,7 +10,6 @@ namespace NumMath
     {
         public double[,] values;
         public int[] offsets;
-        public int size { get; private set; }
         public int diagCount { get; private set; }
         public int mainDiagSize { get; private set; }
         public double this[int i, int j]
@@ -21,9 +20,8 @@ namespace NumMath
                 return diagIndex == -1 ? 0 : values[diagIndex, i];
             }
         }
-        public DiagMatrix(int size, int[] diagOffsets, double[,] values)
+        public DiagMatrix(int size, int[] diagOffsets, double[,] values) : base(size)
         {
-            this.size = size;
             diagCount = diagOffsets.Length;
             offsets = diagOffsets;
             this.values = values;

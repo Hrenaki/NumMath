@@ -7,5 +7,12 @@ using System.Threading.Tasks;
 namespace NumMath
 {
     public class Matrix
-    { }
+    {
+        public int size { get; private set; }
+
+        public Matrix(int size)
+        {
+            this.size = size;
+        }
+    }
 }
