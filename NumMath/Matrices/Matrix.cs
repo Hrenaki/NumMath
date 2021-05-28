@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace NumMath
 {
-    public class Matrix
+    public abstract class Matrix
     {
         public int size { get; private set; }
-
         public Matrix(int size)
         {
             this.size = size;
         }
+
+        public abstract T Cast<T>() where T : Matrix;
     }
 }

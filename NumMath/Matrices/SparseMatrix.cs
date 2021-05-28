@@ -43,7 +43,7 @@ namespace NumMath
                 ggu.Split(' ').Select(value => double.Parse(value)).ToArray(),
                 ggl.Split(' ').Select(value => double.Parse(value)).ToArray());
         }
-        public T Cast<T>() where T : Matrix
+        public override T Cast<T>()
         {
             if (typeof(T) == typeof(ProfileMatrix))
             {
@@ -152,42 +152,64 @@ namespace NumMath
             string text = "";
             int i, j, k;
 
-            for(i = 0; i < size; i++)
+            for (i = 0; i < size; i++)
             {
-                for (j = 0; j < jg[i]; j++)
-                    text += 0.ToString("E2") + " ";
-                for(j = ig[i]; j < ig[i + 1]; j++)
+                if (ig[i + 1] - ig[i] > 0)
                 {
+                    for (j = 0; j < jg[ig[i]]; j++)
+                        text += 0.ToString("E2") + " ";
+                    for (j = ig[i]; j < ig[i + 1] - 1; j++)
+                    {
+                        text += ggl[j].ToString("E2") + " ";
+                        for (k = jg[j]; k < jg[j + 1] - 1; k++)
+                            text += 0.ToString("E2") + " ";
+                    }
                     text += ggl[j].ToString("E2") + " ";
-                    for (k = jg[j]; k < jg[j + 1]; k++)
+                    for (j = jg[j] + 1; j < i; j++)
                         text += 0.ToString("E2") + " ";
                 }
-                for(j = i + 1; j < size; j++)
+                else
+                    for (j = 0; j < i; j++)
+                        text += 0.ToString("E2") + " ";
+
+                text += di[i].ToString("E2") + " ";
+                for (j = i + 1; j < size; j++)
                 {
-                    for(k = ig[j]; k < ig[j + 1]; k++)
-                        if(jg[k] == i)
+                    for (k = ig[j]; k < ig[j + 1]; k++)
+                        if (jg[k] == i)
                             break;
-                    text += (k == ig[j + 1] ? 0 : ggu[k]).ToString("E2") + " "; 
+                    text += (k == ig[j + 1] ? 0 : ggu[k]).ToString("E2") + " ";
                 }
                 text += '\n';
             }
             return text;
         }
-        public string ToString(string format = "E2")
+        public string ToString(string format)
         {
             string text = "";
             int i, j, k;
 
             for (i = 0; i < size; i++)
             {
-                for (j = 0; j < jg[i]; j++)
-                    text += 0.ToString(format) + " ";
-                for (j = ig[i]; j < ig[i + 1]; j++)
+                if (ig[i + 1] - ig[i] > 0)
                 {
+                    for (j = 0; j < jg[ig[i]]; j++)
+                        text += 0.ToString(format) + " ";
+                    for (j = ig[i]; j < ig[i + 1] - 1; j++)
+                    {
+                        text += ggl[j].ToString(format) + " ";
+                        for (k = jg[j]; k < jg[j + 1] - 1; k++)
+                            text += 0.ToString(format) + " ";
+                    }
                     text += ggl[j].ToString(format) + " ";
-                    for (k = jg[j]; k < jg[j + 1]; k++)
+                    for (j = jg[j] + 1; j < i; j++)
                         text += 0.ToString(format) + " ";
                 }
+                else 
+                    for(j = 0; j < i; j++)
+                        text += 0.ToString(format) + " ";
+
+                text += di[i].ToString(format) + " ";
                 for (j = i + 1; j < size; j++)
                 {
                     for (k = ig[j]; k < ig[j + 1]; k++)
@@ -220,7 +242,7 @@ namespace NumMath
                 di.Split(' ').Select(value => double.Parse(value.Replace(".", ","))).ToArray(),
                 gg.Split(' ').Select(value => double.Parse(value.Replace(".", ","))).ToArray());
         }
-        public Matrix Cast<T>()
+        public override T Cast<T>()
         {
             if(typeof(T) == typeof(SparseMatrix))
             {
@@ -245,7 +267,7 @@ namespace NumMath
                         newMatrix_jg[j] = jg[j];
                     }
                 }
-                return newMatrix;
+                return newMatrix as T;
             }
             return null;
         }

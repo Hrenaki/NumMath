@@ -75,7 +75,7 @@ namespace NumMath
                 sk[i] = rk[i];
             }
 
-            for(step = 0; step < size && curNorm / norm >= Epsilon * Epsilon; step++)
+            for(step = 0; curNorm / norm >= Epsilon * Epsilon; step++)
             {
                 mult(zk, temp);
                 ak = 0;

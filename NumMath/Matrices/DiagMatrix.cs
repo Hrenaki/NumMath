@@ -73,5 +73,10 @@ namespace NumMath
                 for (int j = 0; j < size; j++)
                     values[i, j] = 0.0;
         }
+
+        public override T Cast<T>()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

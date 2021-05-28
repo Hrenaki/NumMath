@@ -127,6 +127,11 @@ namespace NumMath
             }
             return text;
         }
+
+        public override T Cast<T>()
+        {
+            throw new NotImplementedException();
+        }
     }
     public class SymmProfileMatrix : Matrix
     {
@@ -205,6 +210,11 @@ namespace NumMath
                 text += '\n';
             }
             return text;
+        }
+
+        public override T Cast<T>()
+        {
+            throw new NotImplementedException();
         }
     }
 }

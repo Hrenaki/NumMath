@@ -18,7 +18,7 @@ namespace NumMath
         {
             values = new double[size, size];
         }
-        public FullMatrix(double[,] values) : base(values.Length / 2)
+        public FullMatrix(double[,] values) : base((int)Math.Sqrt(values.Length))
         {
             this.values = values;
         }
@@ -68,6 +68,36 @@ namespace NumMath
                 text += '\n';
             }
             return text;
+        }
+
+        public override T Cast<T>()
+        {
+            Type curType = typeof(T);
+            if(curType == typeof(SparseMatrix))
+            {
+                double[] di = new double[size];
+                double[] ggl = new double[size * (size - 1) / 2];
+                double[] ggu = new double[ggl.Length];
+
+                int[] ig = new int[size + 1];
+                int[] jg = new int[ggl.Length];
+
+                for(int i = 0; i < size; i++)
+                {
+                    ig[i + 1] = ig[i];
+
+                    for(int j = 0; j < i; j++, ig[i + 1]++)
+                    {
+                        ggl[ig[i + 1]] = values[i, j];
+                        ggu[ig[i + 1]] = values[j, i];
+                        jg[ig[i + 1]] = j;
+                    }
+                    di[i] = values[i, i];
+                }
+
+                return (new SparseMatrix(size, ig, jg, di, ggu, ggl)) as T;
+            }
+            return null;
         }
     }
 }
