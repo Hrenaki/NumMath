@@ -1,8 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using NumMath;
-using HarmonicFEM;
-using EParser;
 using NumMath.Splines;
 using System.Linq;
 
