@@ -60,7 +60,7 @@
     <Compile Include="Solvers\SeidelSolver.cs" />
     <Compile Include="Solvers\Solver.cs" />
     <Compile Include="Matrices\SparseMatrix.cs" />
-    <Compile Include="Splines\ISpline2D.cs" />
+    <Compile Include="Splines\ISpline1D.cs" />
     <Compile Include="Vectors\Vector.cs" />
     <Compile Include="Vectors\Vector2.cs" />
   </ItemGroup>
