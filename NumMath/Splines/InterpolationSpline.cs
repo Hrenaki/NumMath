@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NumMath.Splines
 {
-    public class InterpolationSpline : ISpline2D
+    public class InterpolationSpline : ISpline1D
     {
         Vector2[] points;
     

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NumMath.Splines
 {
-    public interface ISpline2D
+    public interface ISpline1D
     {
         double GetValue(double x);
     }
