@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30907.101
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumMath", "NumMath\NumMath.csproj", "{19330711-1EC4-457F-9DE2-45539773F407}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumMathTest", "NumMathTest\NumMathTest.csproj", "{F569351B-1EB2-4429-9B49-ED9D0CC3AA48}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComGeom", "ComGeom\ComGeom.csproj", "{D26DE038-882C-4DB5-8DD2-DC866428ADC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{F569351B-1EB2-4429-9B49-ED9D0CC3AA48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F569351B-1EB2-4429-9B49-ED9D0CC3AA48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F569351B-1EB2-4429-9B49-ED9D0CC3AA48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D26DE038-882C-4DB5-8DD2-DC866428ADC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D26DE038-882C-4DB5-8DD2-DC866428ADC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D26DE038-882C-4DB5-8DD2-DC866428ADC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D26DE038-882C-4DB5-8DD2-DC866428ADC6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
