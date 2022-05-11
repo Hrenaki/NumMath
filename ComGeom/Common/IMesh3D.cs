@@ -10,5 +10,7 @@ namespace ComGeom
         IReadOnlyList<Element> Elements { get; }
         IReadOnlyDictionary<int, string> BoundaryMaterialNames { get; }
         IReadOnlyDictionary<int, string> VolumeMaterialNames { get; }
+
+        IMesh3D MergeWith(IMesh3D other, int boundaryMaterialIndex, int otherBoundaryMaterialIndex);
     }
 }
