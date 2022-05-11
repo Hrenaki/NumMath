@@ -6,12 +6,17 @@ namespace ComGeom
 {
     internal enum FileExtensions
     {
-        Object
+        Object,
+        Expmesh
     }
 
     internal static class FileSystem
     {
-        private static Dictionary<FileExtensions, string> fileExtensions = new Dictionary<FileExtensions, string>() { { FileExtensions.Object, ".obj" } };
+        private static Dictionary<FileExtensions, string> fileExtensions = new Dictionary<FileExtensions, string>() 
+        { 
+            { FileExtensions.Object, ".obj" },
+            { FileExtensions.Expmesh, ".expmesh" }
+        };
 
         public static bool IsFileExist(string filename)
         {
