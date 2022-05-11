@@ -14,10 +14,10 @@ namespace ComGeom
         public double Norm => Math.Sqrt(X * X + Y * Y + Z * Z);
         public double SqrNorm => X * X + Y * Y + Z * Z;
 
-        public Vector3D Zero => new Vector3D(0, 0, 0);
-        public Vector3D UnitX => new Vector3D(1, 0, 0);
-        public Vector3D UnitY => new Vector3D(0, 1, 0);
-        public Vector3D UnitZ => new Vector3D(0, 0, 1);
+        public static Vector3D Zero => new Vector3D(0, 0, 0);
+        public static Vector3D UnitX => new Vector3D(1, 0, 0);
+        public static Vector3D UnitY => new Vector3D(0, 1, 0);
+        public static Vector3D UnitZ => new Vector3D(0, 0, 1);
 
         public Vector3D(double x, double y, double z)
         {
@@ -46,6 +46,10 @@ namespace ComGeom
         public static Vector3D operator-(Vector3D a, Vector3D b)
         {
             return new Vector3D(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
+        }
+        public static Vector3D operator-(Vector3D a)
+        {
+            return new Vector3D(-a.X, -a.Y, -a.Z);
         }
 
         public static Vector3D operator*(double number, Vector3D vector)
