@@ -9,6 +9,7 @@ namespace ComGeom
         public double X { get; set; }
         public double Y { get; set; }
         public double Z { get; set; }
+        internal static int Dimension { get; } = 3;
 
         public double Norm => Math.Sqrt(X * X + Y * Y + Z * Z);
         public double SqrNorm => X * X + Y * Y + Z * Z;
@@ -27,7 +28,9 @@ namespace ComGeom
 
         public Vector3D(params double[] values)
         {
-            if(values == null || values.Length != 3)
+            Guard.AgainstNull(values, nameof(values));
+
+            if(values.Length != 3)
                 throw new ArgumentException("Parameter is invalid.", nameof(values));
 
             X = values[0];
@@ -78,10 +81,20 @@ namespace ComGeom
             return dx * dx + dy * dy + dz * dz;
         }
 
+        public bool IsZero(double eps)
+        {
+            return SqrNorm < eps * eps;
+        }
+
         public Vector3D Unify()
         {
             double norm = Norm;
             return new Vector3D(X / norm, Y / norm, Z / norm);
+        }
+
+        public override string ToString()
+        {
+            return string.Join(" ", X.ToString("F4"), Y.ToString("F4"), Z.ToString("F4"));
         }
     }
 }
