@@ -108,6 +108,54 @@ namespace ComGeomTest.MeshMergeTests
         }
 
         [Test]
+        public void NoVertexIsInsideTwoEdgesIntersect()
+        {
+            Vector3D[] vertices = new Vector3D[]
+            {
+                new Vector3D(0, 0, 0),
+                new Vector3D(1, 0, 0),
+                new Vector3D(0.5, 1, 0)
+            };
+
+            Vector3D[] otherVertices = new Vector3D[]
+            {
+                new Vector3D(-0.5, 0, 0),
+                new Vector3D(1, 0.6, 0),
+                new Vector3D(-0.5, 0.6, 0)
+            };
+
+            GenerateData(vertices, otherVertices, out var vertexInfo, out var otherVertexInfo, out List<Vector3D> intersectionPoints);
+            List<Vector3D> actual = ComGeomAlgorithms.GetIntersectionWindow(vertices, vertexInfo, otherVertices, otherVertexInfo, intersectionPoints, epsilon);
+            List<Vector3D> theory = new List<Vector3D>() { new Vector3D(0.125, 0.25, 0), new Vector3D(0.75, 0.5, 0), new Vector3D(0.7, 0.6, 0), new Vector3D(0.3, 0.6, 0) };
+            Assert.True(IsIntersectionWindowCorrect(actual, theory));
+        }
+
+        [Test]
+        public void NoVertexIsInsideThreeEdgesIntersect()
+        {
+            Vector3D[] vertices = new Vector3D[]
+            {
+                new Vector3D(0, 0, 0),
+                new Vector3D(1, 0, 0),
+                new Vector3D(0.5, 1, 0)
+            };
+
+            Vector3D[] otherVertices = new Vector3D[]
+            {
+                new Vector3D(0.5, -0.4, 0),
+                new Vector3D(1, 0.6, 0),
+                new Vector3D(0, 0.6, 0)
+            };
+
+            GenerateData(vertices, otherVertices, out var vertexInfo, out var otherVertexInfo, out List<Vector3D> intersectionPoints);
+            List<Vector3D> actual = ComGeomAlgorithms.GetIntersectionWindow(vertices, vertexInfo, otherVertices, otherVertexInfo, intersectionPoints, epsilon);
+            List<Vector3D> theory = new List<Vector3D>() { new Vector3D(0.3, 0, 0), new Vector3D(0.7, 0, 0), 
+                                                           new Vector3D(0.85, 0.3, 0), new Vector3D(0.7, 0.6, 0),
+                                                           new Vector3D(0.3, 0.6, 0), new Vector3D(0.15, 0.3, 0) };
+            Assert.True(IsIntersectionWindowCorrect(actual, theory));
+        }
+
+        [Test]
         public void OneVertexIsEqualToOther()
         {
             Vector3D[] vertices = new Vector3D[]
