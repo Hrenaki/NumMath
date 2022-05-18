@@ -392,7 +392,7 @@ namespace ComGeom.Meshes
                 if (triangleTuple.FromSplitted)
                     continue;
 
-                int tetrahedronIndex = triangles.FindIndex(0, triangles.Count, triangle => triangle.FromSplitted && !triangleTuple.Triangle.Indices.Except(triangle.Tetrahedron.Indices).Any());
+                int tetrahedronIndex = triangles.FindIndex(triangle => triangle.FromSplitted && !triangleTuple.Triangle.Indices.Except(triangle.Tetrahedron.Indices).Any());
                 if (tetrahedronIndex >= 0)
                     triangles[i] = (triangleTuple.Triangle, triangles[tetrahedronIndex].Tetrahedron, false);
             }
