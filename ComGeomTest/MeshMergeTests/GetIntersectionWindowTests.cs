@@ -24,15 +24,15 @@ namespace ComGeomTest.MeshMergeTests
         }
 
         private static void GenerateData(Vector3D[] vertices, Vector3D[] otherVertices, 
-                                         out (int vertexLocalIndex, (bool belongs, int belongsToEdge, int equalToVertex) info)[] vertex1Infos,
-                                         out (int vertexLocalIndex, (bool belongs, int belongsToEdge, int equalToVertex) info)[] vertex2Infos,
+                                         out (int VertexLocalIndex, (bool Belongs, int BelongsToEdge, int EqualToVertex) info)[] vertex1Infos,
+                                         out (int VertexLocalIndex, (bool Belongs, int BelongsToEdge, int EqualToVertex) info)[] vertex2Infos,
                                          out List<Vector3D> intersectionPoints)
         {
             Vector3D[] edges = GetEdges(vertices);
             Vector3D[] otherEdges = GetEdges(otherVertices);
 
-            vertex1Infos = new (int vertexLocalIndex, (bool belongs, int belongsToEdge, int equalToVertex) info)[3];
-            vertex2Infos = new (int vertexLocalIndex, (bool belongs, int belongsToEdge, int equalToVertex) info)[3];
+            vertex1Infos = new (int VertexLocalIndex, (bool Belongs, int BelongsToEdge, int EqualToVertex) info)[3];
+            vertex2Infos = new (int VertexLocalIndex, (bool Belongs, int BelongsToEdge, int EqualToVertex) info)[3];
 
             for(int i = 0; i < vertices.Length; i++)
             {
@@ -148,10 +148,12 @@ namespace ComGeomTest.MeshMergeTests
             };
 
             GenerateData(vertices, otherVertices, out var vertexInfo, out var otherVertexInfo, out List<Vector3D> intersectionPoints);
-            List<Vector3D> actual = ComGeomAlgorithms.GetIntersectionWindow(vertices, vertexInfo, otherVertices, otherVertexInfo, intersectionPoints, epsilon);
-            List<Vector3D> theory = new List<Vector3D>() { new Vector3D(0.3, 0, 0), new Vector3D(0.7, 0, 0), 
+            List<Vector3D> theory = new List<Vector3D>() { new Vector3D(0.3, 0, 0), new Vector3D(0.7, 0, 0),
                                                            new Vector3D(0.85, 0.3, 0), new Vector3D(0.7, 0.6, 0),
                                                            new Vector3D(0.3, 0.6, 0), new Vector3D(0.15, 0.3, 0) };
+
+            List<Vector3D> actual = ComGeomAlgorithms.GetIntersectionWindow(vertices, vertexInfo, otherVertices, otherVertexInfo, intersectionPoints, epsilon);
+            
             Assert.True(IsIntersectionWindowCorrect(actual, theory));
         }
 
