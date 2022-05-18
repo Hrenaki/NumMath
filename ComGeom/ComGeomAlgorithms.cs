@@ -144,33 +144,33 @@ namespace ComGeom
             return new(true, -1, -1);
         }
 
-        public static List<Vector3D> GetIntersectionWindow(Vector3D[] vertices1, (int vertexLocalIndex, (bool belongs, int belongsToEdge, int equalToVertex) info)[] vertex1Infos,
-                                                           Vector3D[] vertices2, (int vertexLocalIndex, (bool belongs, int belongsToEdge, int equalToVertex) info)[] vertex2Infos,
+        public static List<Vector3D> GetIntersectionWindow(Vector3D[] vertices1, (int VertexLocalIndex, (bool Belongs, int BelongsToEdge, int EqualToVertex) info)[] vertex1Infos,
+                                                           Vector3D[] vertices2, (int VertexLocalIndex, (bool Belongs, int BelongsToEdge, int EqualToVertex) info)[] vertex2Infos,
                                                            List<Vector3D> intersectionPoints,
                                                            double epsilon)
         {
             double sqrEpsilon = epsilon * epsilon;
 
             void AddUniqueInsideVertices(Vector3D[] vertices,
-                                         (int vertexLocalIndex, (bool belongs, int belongsToEdge, int equalToVertex) info)[] vertexInfos,
+                                         (int VertexLocalIndex, (bool Belongs, int BelongsToEdge, int EqualToVertex) info)[] vertexInfos,
                                          List<Vector3D> destination)
             {
                 foreach (var vertexInfo in vertexInfos)
                 {
-                    var vertex = vertices[vertexInfo.vertexLocalIndex];
-                    if (vertexInfo.info.belongs && !destination.Exists(v => v.SqrDistance(vertex) < sqrEpsilon))
+                    var vertex = vertices[vertexInfo.VertexLocalIndex];
+                    if (vertexInfo.info.Belongs && !destination.Exists(v => v.SqrDistance(vertex) < sqrEpsilon))
                     {
                         destination.Add(vertex);
                     }
                 }
             }
 
-            if (vertex1Infos.All(vertexInfo => vertexInfo.info.belongs))
+            if (vertex1Infos.All(vertexInfo => vertexInfo.info.Belongs))
             {
                 return vertices1.ToList();
             }
 
-            if (vertex2Infos.All(vertexInfo => vertexInfo.info.belongs))
+            if (vertex2Infos.All(vertexInfo => vertexInfo.info.Belongs))
             {
                 return vertices2.ToList();
             }
