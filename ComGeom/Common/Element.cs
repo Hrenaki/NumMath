@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ComGeom
 {
@@ -49,6 +50,11 @@ namespace ComGeom
         public Element CopyWithNewIndices(int[] newIndices)
         {
             return new Element(Type, MaterialNumber, newIndices);
+        }
+
+        public bool Equals(Element other)
+        {
+            return Type == other.Type && MaterialNumber == other.MaterialNumber && !Indices.Except(other.Indices).Any() && !other.Indices.Except(Indices).Any();
         }
 
         public override string ToString()
