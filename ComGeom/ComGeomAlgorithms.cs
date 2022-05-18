@@ -221,9 +221,9 @@ namespace ComGeom
         }
 
         private static List<(int LocalIndex, int IntersectionWindowIndex, Vector3D Line)> GetNewEdges(List<Vector3D> intersectionWindow,
-                                                                                          (int StartIndex, int EndIndex, Vector3D Line)[] intersectionWindowEdges,
-                                                                                          Vector3D[] localVertices,
-                                                                                          double epsilon)
+                                                                                                      (int StartIndex, int EndIndex, Vector3D Line)[] intersectionWindowEdges,
+                                                                                                      Vector3D[] localVertices,
+                                                                                                      double epsilon)
         {
             double sqrEpsilon = epsilon * epsilon;
 
@@ -303,18 +303,26 @@ namespace ComGeom
             double sqrEpsilon = epsilon * epsilon;
             int index;
 
-            var newEdges = GetNewEdges(intersectionWindow, intersectionWindowEdges, triangleVertices, epsilon);
+            int intersectionWindowCount = intersectionWindow.Count;
+
+            if(intersectionWindowCount < 1)
+                return new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>() { new(triangle, tetrahedron, false) };
 
             List<int> windowIndices = intersectionWindow.Select(windowVertex => meshVertices.FindIndex(0, meshVertices.Count, vertex => vertex.SqrDistance(windowVertex) < sqrEpsilon)).ToList();
+
+            if(intersectionWindowCount <= 3 && !windowIndices.Except(triangle.Indices).Any())
+                return new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)> { new(triangle, tetrahedron, false) };
+
+            var newEdges = GetNewEdges(intersectionWindow, intersectionWindowEdges, triangleVertices, epsilon);
 
             int tetrahedronTopVertexIndex = tetrahedron.Indices.Except(triangle.Indices).Single();
             var newElements = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>();
 
-            for (index = 1; index < intersectionWindow.Count - 1; index++)
+            for (index = 1; index < intersectionWindowCount - 1; index++)
             {
                 newElements.Add((CopyElementWithNewIndices(triangle, new int[] { windowIndices[0], windowIndices[index], windowIndices[index + 1] }),
-                                        CopyElementWithNewIndices(tetrahedron, new int[] { windowIndices[0], windowIndices[index], windowIndices[index + 1], tetrahedronTopVertexIndex }),
-                                        true));
+                                 CopyElementWithNewIndices(tetrahedron, new int[] { windowIndices[0], windowIndices[index], windowIndices[index + 1], tetrahedronTopVertexIndex }),
+                                 true));
             }
 
             foreach (var windowEdge in intersectionWindowEdges)
@@ -335,14 +343,17 @@ namespace ComGeom
                 }
             }
 
+            Vector3D[] tempTriangleVertices = new Vector3D[3];
+            Vector3D[] tempTriangleEdges = new Vector3D[3];
+
             for (int k = 0; k < triangle.Indices.Length; k++)
             {
                 Vector3D edge = triangleVertices[(k + 1) % 3] - triangleVertices[k];
 
-                for (index = 0; index < intersectionWindow.Count; index++)
+                for (index = 0; index < intersectionWindowCount; index++)
                 {
                     if (newEdges.Exists(edge => edge.LocalIndex == k && edge.IntersectionWindowIndex == index) &&
-                       newEdges.Exists(edge => edge.LocalIndex == (k + 1) % 3 && edge.IntersectionWindowIndex == index))
+                        newEdges.Exists(edge => edge.LocalIndex == (k + 1) % 3 && edge.IntersectionWindowIndex == index))
                     {
                         // Add new triangle
                         int index1 = windowIndices[index];
@@ -356,9 +367,28 @@ namespace ComGeom
                         if (intersectionWindow.Exists(point => Vector3D.Cross(point - meshVertices[k], edge).SqrNorm < sqrEpsilon))
                             continue;
 
+                        tempTriangleVertices[0] = triangleVertices[k];
+                        tempTriangleVertices[1] = meshVertices[index1];
+                        tempTriangleVertices[2] = triangleVertices[(k + 1) % 3];
+
+                        tempTriangleEdges[0] = tempTriangleVertices[1] - tempTriangleVertices[0];
+                        tempTriangleEdges[1] = tempTriangleVertices[2] - tempTriangleVertices[1];
+                        tempTriangleEdges[2] = tempTriangleVertices[0] - tempTriangleVertices[2];
+
+                        if (intersectionWindow.Any(point =>
+                                                            {
+                                                                var info = PointBelongsToTriangleInfo(point, tempTriangleVertices, tempTriangleEdges, epsilon);
+                                                                return info.belongs && info.equalToVertex == -1;
+                                                            }
+                                                  )
+                            )
+                        {
+                            continue;
+                        }
+
                         newElements.Add((CopyElementWithNewIndices(triangle, new int[] { triangle.Indices[k], index1, triangle.Indices[(k + 1) % 3] }),
-                                                CopyElementWithNewIndices(tetrahedron, new int[] { triangle.Indices[k], index1, triangle.Indices[(k + 1) % 3], tetrahedronTopVertexIndex }),
-                                                true));
+                                         CopyElementWithNewIndices(tetrahedron, new int[] { triangle.Indices[k], index1, triangle.Indices[(k + 1) % 3], tetrahedronTopVertexIndex }),
+                                         true));
                     }
                 }
             }
