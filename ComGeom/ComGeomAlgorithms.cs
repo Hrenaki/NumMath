@@ -81,7 +81,7 @@ namespace ComGeom
             return null;
         }
 
-        public static (bool belongs, int belongsToEdge, int equalToVertex) PointBelongsToTriangleInfo(Vector3D point,
+        public static (bool Belongs, int BelongsToEdge, int EqualToVertex) PointBelongsToTriangleInfo(Vector3D point,
                                                                                                       Vector3D[] triangleVertices,
                                                                                                       Vector3D[] triangleEdges,
                                                                                                       double epsilon)
@@ -233,7 +233,7 @@ namespace ComGeom
 
             bool multipleIntersection;
 
-            var additionalEdges = new List<(int localIndex, int figureIndex, Vector3D line)>();
+            var additionalEdges = new List<(int LocalIndex, int FigureIndex, Vector3D Line)>();
 
             bool intersectionFound;
             int pointIndex;
@@ -268,7 +268,7 @@ namespace ComGeom
 
                     foreach (var additionalEdge in additionalEdges)
                     {
-                        var intersectPoint = GetIntersectionPointOfSegments(currentPoint, edge, localVertices[additionalEdge.localIndex], additionalEdge.line, epsilon, out multipleIntersection);
+                        var intersectPoint = GetIntersectionPointOfSegments(currentPoint, edge, localVertices[additionalEdge.LocalIndex], additionalEdge.Line, epsilon, out multipleIntersection);
 
                         if (multipleIntersection || intersectPoint.HasValue && intersectPoint.Value.SqrDistance(point) >= sqrEpsilon &&
                                                                                intersectPoint.Value.SqrDistance(currentPoint) >= sqrEpsilon)
@@ -378,7 +378,7 @@ namespace ComGeom
                         if (intersectionWindow.Any(point =>
                                                             {
                                                                 var info = PointBelongsToTriangleInfo(point, tempTriangleVertices, tempTriangleEdges, epsilon);
-                                                                return info.belongs && info.equalToVertex == -1;
+                                                                return info.Belongs && info.EqualToVertex == -1;
                                                             }
                                                   )
                             )
