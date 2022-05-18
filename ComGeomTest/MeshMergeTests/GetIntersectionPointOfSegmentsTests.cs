@@ -5,7 +5,7 @@ using System;
 using System.Reflection;
 using System.Collections.Generic;
 
-namespace ComGeomTest
+namespace ComGeomTest.MeshMergeTests
 {
     public class GetIntersectionPointOfSegmentsTests
     {
