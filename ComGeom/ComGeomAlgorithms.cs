@@ -366,30 +366,33 @@ namespace ComGeom
                 }
             }
 
+            int startIndex, endIndex;
             for (int k = 0; k < triangle.Indices.Length; k++)
             {
-                Vector3D edge = triangleVertices[(k + 1) % 3] - triangleVertices[k];
+                startIndex = k;
+                endIndex = (k + 1) % triangle.Indices.Length;
+                Vector3D edge = triangleVertices[endIndex] - triangleVertices[startIndex];
 
                 for (index = 0; index < intersectionWindowCount; index++)
                 {
-                    if (newEdges.Exists(edge => edge.LocalIndex == k && edge.IntersectionWindowIndex == index) &&
-                        newEdges.Exists(edge => edge.LocalIndex == (k + 1) % 3 && edge.IntersectionWindowIndex == index))
+                    if (newEdges.Exists(edge => edge.LocalIndex == startIndex && edge.IntersectionWindowIndex == index) &&
+                        newEdges.Exists(edge => edge.LocalIndex == endIndex && edge.IntersectionWindowIndex == index))
                     {
                         // Add new triangle
                         int index1 = windowIndices[index];
-                        if (Vector3D.Cross(meshVertices[index1] - triangleVertices[k], triangleVertices[(k + 1) % 3] - meshVertices[index1]).SqrNorm < sqrEpsilon ||
+                        if (Vector3D.Cross(meshVertices[index1] - triangleVertices[startIndex], triangleVertices[endIndex] - meshVertices[index1]).SqrNorm < sqrEpsilon ||
                             triangle.Indices.Contains(index1))
                             continue;
 
-                        if (newElements.Exists(element => element.Triangle.Indices.Contains(k) && element.Triangle.Indices.Contains((k + 1) % 3)))
+                        if (newElements.Exists(element => element.Triangle.Indices.Contains(startIndex) && element.Triangle.Indices.Contains(endIndex)))
                             continue;
 
-                        if (intersectionWindow.Exists(point => Vector3D.Cross(point - meshVertices[k], edge).SqrNorm < sqrEpsilon))
+                        if (intersectionWindow.Exists(point => Vector3D.Cross(point - meshVertices[startIndex], edge).SqrNorm < sqrEpsilon))
                             continue;
 
-                        tempTriangleVertices[0] = triangleVertices[k];
+                        tempTriangleVertices[0] = triangleVertices[startIndex];
                         tempTriangleVertices[1] = meshVertices[index1];
-                        tempTriangleVertices[2] = triangleVertices[(k + 1) % 3];
+                        tempTriangleVertices[2] = triangleVertices[endIndex];
 
                         tempTriangleEdges[0] = tempTriangleVertices[1] - tempTriangleVertices[0];
                         tempTriangleEdges[1] = tempTriangleVertices[2] - tempTriangleVertices[1];
@@ -404,8 +407,8 @@ namespace ComGeom
                             continue;
                         }
 
-                        newElements.Add((CopyElementWithNewIndices(triangle, new int[] { triangle.Indices[k], index1, triangle.Indices[(k + 1) % 3] }),
-                                         CopyElementWithNewIndices(tetrahedron, new int[] { triangle.Indices[k], index1, triangle.Indices[(k + 1) % 3], tetrahedronTopVertexIndex }),
+                        newElements.Add((CopyElementWithNewIndices(triangle, new int[] { triangle.Indices[startIndex], index1, triangle.Indices[endIndex] }),
+                                         CopyElementWithNewIndices(tetrahedron, new int[] { triangle.Indices[startIndex], index1, triangle.Indices[endIndex], tetrahedronTopVertexIndex }),
                                          true));
                     }
                 }
