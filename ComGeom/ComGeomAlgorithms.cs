@@ -325,6 +325,9 @@ namespace ComGeom
                                  true));
             }
 
+            Vector3D[] tempTriangleVertices = new Vector3D[3];
+            Vector3D[] tempTriangleEdges = new Vector3D[3];
+
             foreach (var windowEdge in intersectionWindowEdges)
             {
                 for (int k = 0; k < triangle.Indices.Length; k++)
@@ -336,15 +339,29 @@ namespace ComGeom
                         int index1 = windowIndices[windowEdge.StartIndex];
                         int index2 = windowIndices[windowEdge.EndIndex];
 
+                        tempTriangleVertices[0] = meshVertices[index1];
+                        tempTriangleVertices[1] = triangleVertices[k];
+                        tempTriangleVertices[2] = meshVertices[index2];
+
+                        tempTriangleEdges[0] = tempTriangleVertices[1] - tempTriangleVertices[0];
+                        tempTriangleEdges[1] = tempTriangleVertices[2] - tempTriangleVertices[1];
+                        tempTriangleEdges[2] = tempTriangleVertices[0] - tempTriangleVertices[2];
+
+                        if (intersectionWindow.Any(point =>
+                                                            {
+                                                                var info = PointBelongsToTriangleInfo(point, tempTriangleVertices, tempTriangleEdges, epsilon);
+                                                                return info.Belongs && info.EqualToVertex == -1;
+                                                            }))
+                        {
+                            continue;
+                        }
+
                         newElements.Add((CopyElementWithNewIndices(triangle, new int[] { index1, triangle.Indices[k], index2 }),
                                          CopyElementWithNewIndices(tetrahedron, new int[] { index1, triangle.Indices[k], index2, tetrahedronTopVertexIndex }),
                                          true));
                     }
                 }
             }
-
-            Vector3D[] tempTriangleVertices = new Vector3D[3];
-            Vector3D[] tempTriangleEdges = new Vector3D[3];
 
             for (int k = 0; k < triangle.Indices.Length; k++)
             {
@@ -379,9 +396,7 @@ namespace ComGeom
                                                             {
                                                                 var info = PointBelongsToTriangleInfo(point, tempTriangleVertices, tempTriangleEdges, epsilon);
                                                                 return info.Belongs && info.EqualToVertex == -1;
-                                                            }
-                                                  )
-                            )
+                                                            }))
                         {
                             continue;
                         }
