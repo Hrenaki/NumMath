@@ -217,6 +217,218 @@ namespace ComGeomTest.MeshMergeTests
             Assert.IsTrue(IsActualEqualToTheory(actual, theory));
         }
 
+        // 19.05.2022
+        [Test]
+        public void TwoPointsEqualToVerticesThirdIsOnEdge()
+        {
+            List<Vector3D> window = new List<Vector3D>() { masterTriangle[0], new Vector3D(0.5, 0.5, 0), masterTriangle[2] };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 4, 2 }, new int[] { 0, 1, 4 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
+
+        [Test]
+        public void TwoPointsEqualToVerticesThirdIsInside()
+        {
+            List<Vector3D> window = new List<Vector3D>() { masterTriangle[0], new Vector3D(0.4, 0.4, 0), masterTriangle[2] };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 1, 4 }, new int[] { 1, 2, 4 }, new int[] { 2, 0, 4 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
+
+        [Test]
+        public void OnePointEqualToVertexTwoAreOnEdges()
+        {
+            List<Vector3D> window = new List<Vector3D>() { masterTriangle[2], new Vector3D(0, 0.5, 0), new Vector3D(0.5, 0.5, 0) };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 1, 5 }, new int[] { 2, 4, 5 }, new int[] { 0, 4, 5 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
+
+        [Test]
+        public void OnePointEqualToVertexSecondIsOnEdgeThirdIsInside()
+        {
+            List<Vector3D> window = new List<Vector3D>() { masterTriangle[2], new Vector3D(0, 0.5, 0), new Vector3D(0.2, 0.4, 0) };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 1, 5 }, 
+                                                                new int[] { 1, 2, 5 },
+                                                                new int[] { 2, 4, 5 },
+                                                                new int[] { 0, 4, 5 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
+
+        [Test]
+        public void TwoPointsAreOnOneEdgeThirdIsOnAnother()
+        {
+            List<Vector3D> window = new List<Vector3D>() { new Vector3D(0, 0.7, 0), new Vector3D(0, 0.3, 0), new Vector3D(0.5, 0.5, 0) };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 1, 6 },
+                                                                new int[] { 2, 4, 6 },
+                                                                new int[] { 4, 5, 6 },
+                                                                new int[] { 0, 5, 6 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
+
+        [Test]
+        public void TwoPointsAreOnOneEdgeThirdIsInside()
+        {
+            List<Vector3D> window = new List<Vector3D>() { new Vector3D(0, 0.7, 0), new Vector3D(0, 0.3, 0), new Vector3D(0.2, 0.5, 0) };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 1, 6 },
+                                                                new int[] { 1, 6, 4 },
+                                                                new int[] { 1, 2, 4 },
+                                                                new int[] { 4, 5, 6 },
+                                                                new int[] { 0, 5, 6 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
+
+        [Test]
+        public void ThreePointsAreOnDifferentEdges()
+        {
+            List<Vector3D> window = new List<Vector3D>() { new Vector3D(0, 0.5, 0), new Vector3D(0.5, 0, 0), new Vector3D(0.5, 0.5, 0) };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 4, 5 },
+                                                                new int[] { 4, 5, 6 },
+                                                                new int[] { 1, 5, 6 },
+                                                                new int[] { 2, 4, 6 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
+
+        [Test]
+        public void TwoPointsAreOnDifferentEdgesAnotherOneIsInside()
+        {
+            List<Vector3D> window = new List<Vector3D>() { new Vector3D(0, 0.5, 0), new Vector3D(0.3, 0.2, 0), new Vector3D(0.5, 0.5, 0) };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 4, 5 },
+                                                                new int[] { 0, 1, 5 },
+                                                                new int[] { 1, 5, 6 },
+                                                                new int[] { 4, 5, 6 },
+                                                                new int[] { 2, 4, 6 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
+
+        [Test]
+        public void OnePointIsEqualToVertexOtherTwoAreInside()
+        {
+            List<Vector3D> window = new List<Vector3D>() { masterTriangle[2], new Vector3D(0.2, 0.2, 0), new Vector3D(0.4, 0.2, 0) };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 4, 5 },
+                                                                new int[] { 0, 1, 5 },
+                                                                new int[] { 1, 2, 5 },
+                                                                new int[] { 2, 4, 5 },
+                                                                new int[] { 2, 0, 4 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
+
+        [Test]
+        public void TriangleIsInside()
+        {
+            List<Vector3D> window = new List<Vector3D>() { new Vector3D(0.2, 0.2, 0), new Vector3D(0.4, 0.2, 0), new Vector3D(0.2, 0.4, 0) };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 4, 6 },
+                                                                new int[] { 0, 4, 5 },
+                                                                new int[] { 0, 1, 5 },
+                                                                new int[] { 0, 2, 6 },
+                                                                new int[] { 1, 5, 6 },
+                                                                new int[] { 1, 2, 6 },
+                                                                new int[] { 4, 5, 6 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
+
+        [Test]
+        public void OnePointIsEqualToVertexTwoAreOnDifferentEdgesOneIsInside()
+        {
+            List<Vector3D> window = new List<Vector3D>() { masterTriangle[0], new Vector3D(0, 0.3, 0), new Vector3D(0.3, 0.3, 0), new Vector3D(0.3, 0, 0) };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 4, 5 },
+                                                                new int[] { 0, 5, 6 },
+                                                                new int[] { 1, 5, 6 },
+                                                                new int[] { 1, 2, 5 },
+                                                                new int[] { 2, 4, 5 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
+
+        [Test]
+        public void TwoPointsAreOnOneEdgeTwoAreOnAnother()
+        {
+            List<Vector3D> window = new List<Vector3D>() { new Vector3D(0, 0.2, 0), new Vector3D(0.8, 0.2, 0), new Vector3D(0.4, 0.6, 0), new Vector3D(0, 0.6, 0) };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 4, 5 },
+                                                                new int[] { 0, 1, 5 },
+                                                                new int[] { 4, 5, 6 },
+                                                                new int[] { 4, 6, 7 },
+                                                                new int[] { 2, 6, 7 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
+
+        [Test]
+        public void TwoPointsAreOnOneEdgeTwoAreOnDifferent()
+        {
+            List<Vector3D> window = new List<Vector3D>() { new Vector3D(0, 0.2, 0), new Vector3D(0.4, 0, 0), new Vector3D(0.4, 0.6, 0), new Vector3D(0, 0.6, 0) };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 4, 5 },
+                                                                new int[] { 1, 5, 6 },
+                                                                new int[] { 4, 5, 6 },
+                                                                new int[] { 4, 6, 7 },
+                                                                new int[] { 2, 6, 7 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
+
+        [Test]
+        public void TwoPointsAreOnOneEdgeTwoAreOnDifferentOnePointEqualsToVertex()
+        {
+            List<Vector3D> window = new List<Vector3D>() { new Vector3D(0.2, 0, 0), new Vector3D(0.4, 0, 0), new Vector3D(0.4, 0.6, 0), masterTriangle[2], new Vector3D(0, 0.6, 0) };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 4, 7 },
+                                                                new int[] { 1, 5, 6 },
+                                                                new int[] { 4, 5, 6 },
+                                                                new int[] { 4, 6, 2 },
+                                                                new int[] { 4, 2, 7 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
+
+        [Test]
+        public void ThreePairsOfPointsAreOnDifferentEdges()
+        {
+            List<Vector3D> window = new List<Vector3D>() { new Vector3D(0.2, 0, 0), new Vector3D(0.6, 0, 0), 
+                                                           new Vector3D(0.8, 0.2, 0), new Vector3D(0.4, 0.6, 0), 
+                                                           new Vector3D(0, 0.6, 0), new Vector3D(0, 0.2, 0) };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 4, 9 },
+                                                                new int[] { 1, 5, 6 },
+                                                                new int[] { 4, 5, 6 },
+                                                                new int[] { 4, 6, 7 },
+                                                                new int[] { 4, 7, 8 },
+                                                                new int[] { 4, 8, 9 },
+                                                                new int[] { 2, 7, 8 });
+
             var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
 
             Assert.IsTrue(IsActualEqualToTheory(actual, theory));
