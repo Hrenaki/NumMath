@@ -241,6 +241,9 @@ namespace ComGeom
             {
                 var currentPoint = localVertices[i];
 
+                if (intersectionWindow.Exists(point => point.SqrDistance(currentPoint) <= sqrEpsilon))
+                    continue;
+
                 for (pointIndex = 0; pointIndex < intersectionWindowCount; pointIndex++)
                 {
                     intersectionFound = false;
