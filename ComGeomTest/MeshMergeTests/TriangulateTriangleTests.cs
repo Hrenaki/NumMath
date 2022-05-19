@@ -64,6 +64,27 @@ namespace ComGeomTest.MeshMergeTests
             }
         }
 
+        private static List<(Element Triangle, Element Tetrahedron, bool FromSplitted)> GenerateTheory(int tetrahedronTopVertexIndex, int materialIndex, bool fromSplitted, params int[][] triangleIndices)
+        {
+            List<(Element Triangle, Element Tetrahedron, bool FromSplitted)> theory = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>();
+
+            int indicesLenght = 3;
+            for (int i = 0; i < triangleIndices.Length; i++)
+            {
+                int[] indices = triangleIndices[i];
+
+                int[] tetrahedronIndices = new int[indicesLenght + 1];
+                indices.CopyTo(tetrahedronIndices, 0);
+                tetrahedronIndices[indicesLenght] = tetrahedronTopVertexIndex;
+
+                theory.Add(new(new Element(ElementType.Triangle, materialIndex, indices),
+                               new Element(ElementType.Tetrahedron, materialIndex, tetrahedronIndices),
+                               fromSplitted));
+            }
+
+            return theory;
+        }
+
         private static List<(Element Triangle, Element Tetrahedron, bool FromSplitted)> GetActualResult(Vector3D[] triangle, Vector3D tetrahedronTopVertex, List<Vector3D> intersectionWindow)
         {
             GenerateData(triangle, tetrahedronTopVertex, intersectionWindow,
@@ -90,11 +111,7 @@ namespace ComGeomTest.MeshMergeTests
         public void PointOnEdge()
         {
             List<Vector3D> intersectionWindow = new List<Vector3D>() { new Vector3D(0, 0.5, 0) };
-            var theory = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>()
-            {
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 1, 4 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 1, 4, 3 }), true),
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 4, 1, 2 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 4, 1, 2, 3 }), true)
-            };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 1, 4 }, new int[] { 4, 1, 2 });
 
             var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, intersectionWindow);
 
@@ -105,10 +122,7 @@ namespace ComGeomTest.MeshMergeTests
         public void PointEqualsToVertex()
         {
             List<Vector3D> intersectionWindow = new List<Vector3D>() { masterTriangle[2] };
-            var theory = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>()
-            {
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 1, 2 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 1, 2, 3 }), false)
-            };
+            var theory = GenerateTheory(3, materialIndex, false, new int[] { 0, 1, 2 });
 
             var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, intersectionWindow);
 
@@ -119,12 +133,7 @@ namespace ComGeomTest.MeshMergeTests
         public void PointIsInside()
         {
             List<Vector3D> window = new List<Vector3D>() { new Vector3D(0.2, 0.2, 0) };
-            var theory = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>()
-            {
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 1, 4 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 1, 4, 3 }), true),
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 1, 2, 4 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 1, 2, 4, 3 }), true),
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 2, 0, 4 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 2, 0, 4, 3 }), true)
-            };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 1, 4 }, new int[] { 1, 2, 4 }, new int[] { 2, 0, 4 });
 
             var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
 
@@ -135,12 +144,7 @@ namespace ComGeomTest.MeshMergeTests
         public void TwoPointsAreOnOneEdge()
         {
             List<Vector3D> window = new List<Vector3D>() { new Vector3D(0.3, 0.7, 0), new Vector3D(0.7, 0.3, 0) };
-            var theory = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>()
-            {
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 1, 5 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 1, 5, 3 }), true),
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 4, 5 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 4, 5, 3 }), true),
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 4, 2 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 4, 2, 3 }), true)
-            };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 1, 5 }, new int[] { 0, 4, 5 }, new int[] { 0, 4, 2 });
 
             var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
 
@@ -151,11 +155,7 @@ namespace ComGeomTest.MeshMergeTests
         public void OnePointEqualsToVertexAnotherOneIsOnOppositeEdge()
         {
             List<Vector3D> window = new List<Vector3D>() { new Vector3D(0.3, 0.7, 0), masterTriangle[0] };
-            var theory = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>()
-            {
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 2, 4 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 2, 4, 3 }), true),
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 1, 4 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 1, 4, 3 }), true)
-            };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 2, 4 }, new int[] { 0, 1, 4 });
 
             var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
 
@@ -166,11 +166,7 @@ namespace ComGeomTest.MeshMergeTests
         public void OnePointEqualsToVertexAnotherOneIsOnSameEdge()
         {
             List<Vector3D> window = new List<Vector3D>() { new Vector3D(0.3, 0.7, 0), masterTriangle[2] };
-            var theory = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>()
-            {
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 2, 4 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 2, 4, 3 }), true),
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 1, 4 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 1, 4, 3 }), true)
-            };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 2, 4 }, new int[] { 0, 1, 4 });
 
             var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
 
@@ -181,12 +177,7 @@ namespace ComGeomTest.MeshMergeTests
         public void TwoPointsAreOnDifferentEdges()
         {
             List<Vector3D> window = new List<Vector3D>() { new Vector3D(0.6, 0.4, 0), new Vector3D(0, 0.4, 0) };
-            var theory = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>()
-            {
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 1, 4 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 1, 4, 3 }), true),
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 4, 5 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 4, 5, 3 }), true),
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 2, 4, 5 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 2, 4, 5, 3 }), true)
-            };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 1, 4 }, new int[] { 0, 4, 5 }, new int[] { 2, 4, 5 });
 
             var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
 
@@ -197,12 +188,7 @@ namespace ComGeomTest.MeshMergeTests
         public void OnePointEqualsToVertexAndAnotherOneIsInside()
         {
             List<Vector3D> window = new List<Vector3D>() { new Vector3D(0, 1, 0), new Vector3D(0.2, 0.2, 0) };
-            var theory = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>()
-            {
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 4, 2 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 4, 2, 3 }), true),
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 1, 4 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 1, 4, 3 }), true),
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 1, 2, 4 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 1, 2, 4, 3 }), true)
-            };
+            var theory = GenerateTheory(3, materialIndex, true, new int[] { 0, 4, 2 }, new int[] { 0, 1, 4 }, new int[] { 1, 2, 4 });
 
             var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
 
@@ -213,10 +199,7 @@ namespace ComGeomTest.MeshMergeTests
         public void TwoPointsEqualToVertices()
         {
             List<Vector3D> window = new List<Vector3D>() { masterTriangle[0], masterTriangle[1] };
-            var theory = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>()
-            {
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 1, 2 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 1, 2, 3 }), false)
-            };
+            var theory = GenerateTheory(3, materialIndex, false, new int[] { 0, 1, 2 });
 
             var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
 
@@ -227,10 +210,12 @@ namespace ComGeomTest.MeshMergeTests
         public void PointsEqualToVertices()
         {
             List<Vector3D> window = new List<Vector3D>(masterTriangle);
-            var theory = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>()
-            {
-                new(new Element(ElementType.Triangle, materialIndex, new int[]{ 0, 1, 2 }), new Element(ElementType.Tetrahedron, materialIndex, new int[]{ 0, 1, 2, 3 }), false)
-            };
+            var theory = GenerateTheory(3, materialIndex, false, new int[] { 0, 1, 2 });
+
+            var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
+
+            Assert.IsTrue(IsActualEqualToTheory(actual, theory));
+        }
 
             var actual = GetActualResult(masterTriangle, tetrahedronTopVertex, window);
 
