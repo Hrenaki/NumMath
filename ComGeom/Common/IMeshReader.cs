@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ComGeom.Meshes
+namespace ComGeom.Common
 {
     public interface IMeshIO
     {

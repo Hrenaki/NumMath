@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using ComGeom.Common;
+
 namespace ComGeom.Meshes
 {
     public static class MeshIOFactory
