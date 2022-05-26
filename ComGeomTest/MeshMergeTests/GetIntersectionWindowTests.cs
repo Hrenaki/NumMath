@@ -696,5 +696,55 @@ namespace ComGeomTest.MeshMergeTests
 
             Assert.IsTrue(IsIntersectionWindowCorrect(actual, theory));
         }
+
+        [Test]
+        public void TrianglesAreInDifferentPlanesAndTouchByPoint()
+        {
+            Vector3D[] vertices = new Vector3D[]
+            {
+                new Vector3D(0, 0, 0),
+                new Vector3D(2, 0, 0),
+                new Vector3D(1, 2, 0)
+            };
+
+            Vector3D[] otherVertices = new Vector3D[]
+            {
+                new Vector3D(1, 1, 0),
+                new Vector3D(2, 1, 1),
+                new Vector3D(0, 1, 1)
+            };
+
+            GenerateData(vertices, otherVertices, out var vertexInfo, out var otherVertexInfo, out List<Vector3D> intersectionPoints);
+
+            List<Vector3D> actual = ComGeomAlgorithms.GetIntersectionWindow(vertices, vertexInfo, otherVertices, otherVertexInfo, intersectionPoints, epsilon);
+            List<Vector3D> theory = new List<Vector3D>() { otherVertices[0] };
+
+            Assert.IsTrue(IsIntersectionWindowCorrect(actual, theory));
+        }
+
+        [Test]
+        public void TrianglesAreInDifferentPlanesAndTouchByEdge()
+        {
+            Vector3D[] vertices = new Vector3D[]
+            {
+                new Vector3D(0, 0, 0),
+                new Vector3D(2, 0, 0),
+                new Vector3D(1, 2, 0)
+            };
+
+            Vector3D[] otherVertices = new Vector3D[]
+            {
+                new Vector3D(1, 1, 1),
+                new Vector3D(2, 1, 0),
+                new Vector3D(0, 1, 0)
+            };
+
+            GenerateData(vertices, otherVertices, out var vertexInfo, out var otherVertexInfo, out List<Vector3D> intersectionPoints);
+
+            List<Vector3D> actual = ComGeomAlgorithms.GetIntersectionWindow(vertices, vertexInfo, otherVertices, otherVertexInfo, intersectionPoints, epsilon);
+            List<Vector3D> theory = new List<Vector3D>() { new Vector3D(0.5, 1, 0), new Vector3D(1.5, 1, 0) };
+
+            Assert.IsTrue(IsIntersectionWindowCorrect(actual, theory));
+        }
     }
 }
