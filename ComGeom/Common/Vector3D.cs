@@ -85,6 +85,11 @@ namespace ComGeom
             return dx * dx + dy * dy + dz * dz;
         }
 
+        public double Distance(Vector3D other)
+        {
+            return Math.Sqrt(SqrDistance(other));
+        }
+
         public bool IsZero(double eps)
         {
             return SqrNorm < eps * eps;
@@ -98,7 +103,7 @@ namespace ComGeom
 
         public override string ToString()
         {
-            return string.Join(" ", X.ToString("F4"), Y.ToString("F4"), Z.ToString("F4"));
+            return string.Format("({0})", string.Join(", ", X.ToString("F2"), Y.ToString("F2"), Z.ToString("F2")));
         }
     }
 }

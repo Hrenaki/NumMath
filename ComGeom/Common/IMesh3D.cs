@@ -12,5 +12,6 @@ namespace ComGeom
         IReadOnlyDictionary<int, string> VolumeMaterialNames { get; }
 
         IMesh3D MergeWith(IMesh3D other, int boundaryMaterialIndex, int otherBoundaryMaterialIndex);
+        bool Equals(IMesh3D other, double epsilon);
     }
 }

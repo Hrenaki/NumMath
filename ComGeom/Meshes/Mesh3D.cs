@@ -46,8 +46,14 @@ namespace ComGeom.Meshes
             int i;
             double epsilon = 1E-7;
 
-            LinkedList<Element> elements = new LinkedList<Element>(Elements);
-            LinkedList<Element> otherElements = new LinkedList<Element>(other.Elements);
+            LinkedList<Element> elements = new LinkedList<Element>();
+            LinkedList<Element> otherElements = new LinkedList<Element>();
+
+            foreach(var element in this.elements)
+                elements.AddLast(element.Copy());
+
+            foreach(var element in other.Elements)
+                otherElements.AddLast(element.Copy());
 
             List<Element> boundaryTriangles = elements.Where(element => element.Type == ElementType.Triangle && element.MaterialNumber == boundaryMaterialIndex).ToList();
             List<Element> boundaryTetrahedrons = elements.Where(element => element.Type == ElementType.Tetrahedron && boundaryTriangles.Any(triangle => triangle.Indices.Except(element.Indices).Count() < 2)).ToList();
@@ -133,6 +139,7 @@ namespace ComGeom.Meshes
             for(int k = 0; k < otherElements.Count; k++)
             {
                 Element element = otherElements.ElementAt(k);
+
                 for (i = 0; i < element.Indices.Length; i++)
                 {
                     element.Indices[i] = equalVertexIndices.ContainsKey(element.Indices[i]) ? equalVertexIndices[element.Indices[i]] :
@@ -362,9 +369,15 @@ namespace ComGeom.Meshes
                                                                                                          intersectionWindow, intersectionWindowEdges,
                                                                                                          epsilon)).Count != 0)
                     {
-                            otherTriangles.RemoveAt(j);
-                            otherTriangles.AddRange(newElements);
-                            j--;
+                        otherTriangles.RemoveAt(j);
+                        j--;
+
+                        var faceTuples = otherTriangles.Where(tuple => tuple.Tetrahedron == otherTetrahedron).ToArray();
+                        foreach(var faceTuple in faceTuples)
+                            otherTriangles.Remove(faceTuple);
+                        BreakAdjacentFaces(faceTuples, otherLocalVertices, otherTriangleEdges, otherVertices, intersectionWindow, newElements, epsilon);
+
+                        otherTriangles.AddRange(newElements);
                     }
 
                     if (shouldBreakTriangle && (newElements = ComGeomAlgorithms.TriangulateTriangle(triangle, tetrahedron,
@@ -372,16 +385,75 @@ namespace ComGeom.Meshes
                                                                                                     intersectionWindow, intersectionWindowEdges,
                                                                                                     epsilon)).Count != 0)
                     {
-                            triangles.RemoveAt(i);
-                            triangles.AddRange(newElements);
-                            i--;
-                            break;
+                        triangles.RemoveAt(i);
+                        i--;
+
+                        var faceTuples = triangles.Where(triangle => triangle.Tetrahedron == tetrahedron).ToArray();
+                        foreach (var faceTuple in faceTuples)
+                            triangles.Remove(faceTuple);
+                        BreakAdjacentFaces(faceTuples, localVertices, triangleEdges, vertices, intersectionWindow, newElements, epsilon);
+
+                        triangles.AddRange(newElements);
+                        break;
                     }
                 }
             }
 
-            FindNewTetrahedronsForEntireFaces(triangles);
-            FindNewTetrahedronsForEntireFaces(otherTriangles);
+            //FindNewTetrahedronsForEntireFaces(otherTriangles);
+            //FindNewTetrahedronsForEntireFaces(triangles);
+        }
+
+        private static void BreakAdjacentFaces((Element Triangle, Element Tetrahedron, bool FromSplitted)[] facesToBreak, 
+                                               Vector3D[] triangleVertices, Vector3D[] triangleEdges,
+                                               List<Vector3D> vertices, List<Vector3D> intersectionWindow,
+                                               List<(Element Triangle, Element Tetrahedron, bool FromSplitted)> newElements, double epsilon)
+        {
+            double sqrEpsilon = epsilon * epsilon;
+
+            for (int m = 0; m < facesToBreak.Length; m++)
+            {
+                var faceTuple = facesToBreak[m];
+                var faceTriangle = faceTuple.Triangle;
+
+                triangleVertices[0] = vertices[faceTriangle.Indices[0]];
+                triangleVertices[1] = vertices[faceTriangle.Indices[1]];
+                triangleVertices[2] = vertices[faceTriangle.Indices[2]];
+
+                triangleEdges[0] = triangleVertices[1] - triangleVertices[0];
+                triangleEdges[1] = triangleVertices[2] - triangleVertices[1];
+                triangleEdges[2] = triangleVertices[0] - triangleVertices[2];
+
+                var belongPointInfos = intersectionWindow.Select(point => (Point: point, Info: ComGeomAlgorithms.PointBelongsToTriangleInfo(point, triangleVertices, triangleEdges, epsilon))).ToArray();
+
+                if (belongPointInfos.Where(info => info.Info.Belongs).All(info => info.Info.EqualToVertex != -1))
+                {
+                    int tetrahedronIndex = newElements.FindIndex(triangle => triangle.FromSplitted && !faceTriangle.Indices.Except(triangle.Tetrahedron.Indices).Any());
+                    if (tetrahedronIndex >= 0)
+                        newElements.Add((faceTriangle, newElements[tetrahedronIndex].Tetrahedron, false));
+
+                    continue;
+                }
+
+                int edgeIndex = belongPointInfos.First(info => info.Info.BelongsToEdge != -1).Info.BelongsToEdge;
+                var edgePoints = belongPointInfos.Where(tuple => tuple.Info.BelongsToEdge != -1)
+                                                 .Select(tuple => (Point: tuple.Point, Index: vertices.FindIndex(vertex => vertex.SqrDistance(tuple.Point) < sqrEpsilon)))
+                                                 .ToList();
+
+                edgePoints.Sort((t1, t2) =>
+                {
+                    return ((t1.Point - triangleVertices[edgeIndex]) * triangleEdges[edgeIndex]).CompareTo((t2.Point - triangleVertices[edgeIndex]) * triangleEdges[edgeIndex]);
+                });
+                edgePoints.Insert(0, (triangleVertices[edgeIndex], faceTriangle.Indices[edgeIndex]));
+                edgePoints.Add((triangleVertices[(edgeIndex + 1) % 3], faceTriangle.Indices[(edgeIndex + 1) % 3]));
+                int otherVertexIndex = faceTriangle.Indices[(edgeIndex + 2) % 3];
+
+                for (int n = 0; n < edgePoints.Count - 1; n++)
+                {
+                    var newTriangle = faceTriangle.CopyWithNewIndices(new int[] { edgePoints[n].Index, otherVertexIndex, edgePoints[n + 1].Index });
+                    var newTetrahedron = newElements.First(tuple => !newTriangle.Indices.Except(tuple.Tetrahedron.Indices).Any()).Tetrahedron;
+                    newElements.Add((newTriangle, newTetrahedron, true));
+                }
+            }
         }
 
         private static void FindNewTetrahedronsForEntireFaces(List<(Element Triangle, Element Tetrahedron, bool FromSplitted)> triangles)
@@ -396,6 +468,39 @@ namespace ComGeom.Meshes
                 if (tetrahedronIndex >= 0)
                     triangles[i] = (triangleTuple.Triangle, triangles[tetrahedronIndex].Tetrahedron, false);
             }
+        }
+
+        public bool Equals(IMesh3D other, double epsilon)
+        {
+            if(other == null)
+                return false;
+
+            double sqrEpsilon = epsilon * epsilon;
+            if (vertices.Count != other.Vertices.Count)
+                return false;
+
+            for (int i = 0; i < vertices.Count; i++)
+            {
+                if (vertices[i].SqrDistance(other.Vertices[i]) >= sqrEpsilon)
+                    return false;
+            }
+
+            if (elements.Count != other.Elements.Count || elements.Any(element => !other.Elements.Any(otherElement => element.Equals(otherElement))))
+                return false;
+
+            foreach(var pair in boundaryMaterialNames)
+            {
+                if (other.BoundaryMaterialNames[pair.Key] != pair.Value)
+                    return false;
+            }
+
+            foreach(var pair in volumeMaterialNames)
+            {
+                if (other.VolumeMaterialNames[pair.Key] != pair.Value)
+                    return false;
+            }
+
+            return true;
         }
     }
 }

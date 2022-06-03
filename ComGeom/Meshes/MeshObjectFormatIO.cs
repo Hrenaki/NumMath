@@ -35,7 +35,7 @@ namespace ComGeom.Meshes
                 while(!sr.EndOfStream)
                 {
                     lineIndex++;
-                    string[] splittedLine = sr.ReadLine().Split(separators, StringSplitOptions.RemoveEmptyEntries);
+                    string[] splittedLine = sr.ReadLine()!.Split(separators, StringSplitOptions.RemoveEmptyEntries);
 
                     if(splittedLine.Length < 1)
                         continue;
@@ -111,7 +111,7 @@ namespace ComGeom.Meshes
             Guard.AgainstNull(mesh, nameof(mesh));
 
             if(!FileSystem.IsFileExist(filename))
-                throw new FileNotFoundException(filename);
+                FileSystem.CreateFile(filename);
 
             using(StreamWriter sw = new StreamWriter(filename, false))
             {
@@ -132,7 +132,7 @@ namespace ComGeom.Meshes
 
                 foreach (var materialPair in mesh.VolumeMaterialNames)
                 {
-                    sw.WriteLine(string.Join(separators[0], BoundaryMaterialPrefix, materialPair.Key, materialPair.Value));
+                    sw.WriteLine(string.Join(separators[0], VolumeMaterialPrefix, materialPair.Key, materialPair.Value));
                 }
             }
         }

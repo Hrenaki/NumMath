@@ -21,7 +21,7 @@ namespace ComGeom
         });
     }
 
-    public struct Element
+    public class Element
     {
         public ElementType Type { get; private set; }
         public int MaterialNumber { get; set; }
@@ -47,6 +47,13 @@ namespace ComGeom
                 throw new ArgumentException("Index can't be negative", nameof(Indices));
         }
 
+        public Element Copy()
+        {
+            int[] indices = new int[Indices.Length];
+            Array.Copy(Indices, indices, Indices.Length);
+            return CopyWithNewIndices(indices);
+        }
+
         public Element CopyWithNewIndices(int[] newIndices)
         {
             return new Element(Type, MaterialNumber, newIndices);
@@ -54,7 +61,8 @@ namespace ComGeom
 
         public bool Equals(Element other)
         {
-            return Type == other.Type && MaterialNumber == other.MaterialNumber && !Indices.Except(other.Indices).Any() && !other.Indices.Except(Indices).Any();
+            return ReferenceEquals(this, other) || 
+                   Type == other.Type && MaterialNumber == other.MaterialNumber && !Indices.Except(other.Indices).Any() && !other.Indices.Except(Indices).Any();
         }
 
         public override string ToString()
