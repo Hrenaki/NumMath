@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
 
 using ComGeom.Common;
 
@@ -8,10 +9,12 @@ namespace ComGeom.Meshes
 {
     internal class MeshTelmaFormatIO : IMeshIO
     {
-        private static string[] separators = new string[] { " " };
+        private static string[] separators = new string[] { " ", "\t" };
 
         public IMesh3D Read(string filename)
         {
+            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
             if (!FileSystem.IsFileExist(filename))
                 throw new FileNotFoundException(filename);
 
@@ -43,6 +46,7 @@ namespace ComGeom.Meshes
                     splittedLine = sr.ReadLine().Split(separators, StringSplitOptions.RemoveEmptyEntries);
                     ElementType type = Enum.Parse<ElementType>(splittedLine[0]);
                     Element element = new Element(type, int.Parse(splittedLine[3]), splittedLine.Skip(5).Take(ElementInfo.ElementIndexCount[type]).Select(v => int.Parse(v)).ToArray());
+                    elements.Add(element);
                 }
 
                 int materialCount = int.Parse(sr.ReadLine());
@@ -54,7 +58,7 @@ namespace ComGeom.Meshes
                     if (volumeMaterials.ContainsKey(materialIndex))
                         throw new ArgumentException($"Volume material with index {materialIndex} already exists");
 
-                    volumeMaterials.Add(materialIndex, splittedLine[1]);
+                    volumeMaterials.Add(materialIndex, string.Join(separators[0], splittedLine.Skip(1)));
                 }
 
                 materialCount = int.Parse(sr.ReadLine());
@@ -65,7 +69,7 @@ namespace ComGeom.Meshes
                     if (boundaryMaterials.ContainsKey(materialIndex))
                         throw new ArgumentException($"Volume material with index {materialIndex} already exists");
 
-                    boundaryMaterials.Add(materialIndex, splittedLine[1]);
+                    boundaryMaterials.Add(materialIndex, string.Join(separators[0], splittedLine.Skip(1)));
                 }
             }
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ComGeom
+﻿namespace ComGeom
 {
     public struct Vector3D
     {
@@ -103,7 +99,7 @@ namespace ComGeom
 
         public override string ToString()
         {
-            return string.Format("({0})", string.Join(", ", X.ToString("F2"), Y.ToString("F2"), Z.ToString("F2")));
+            return string.Join(" ", X.ToString("F2"), Y.ToString("F2"), Z.ToString("F2"));
         }
     }
 }

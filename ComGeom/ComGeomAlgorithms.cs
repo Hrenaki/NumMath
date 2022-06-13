@@ -387,8 +387,8 @@ namespace ComGeom
                         if (newElements.Exists(element => element.Triangle.Indices.Contains(startIndex) && element.Triangle.Indices.Contains(endIndex)))
                             continue;
 
-                        if (intersectionWindow.Exists(point => Vector3D.Cross(point - meshVertices[startIndex], edge).SqrNorm < sqrEpsilon))
-                            continue;
+                        //if (intersectionWindow.Exists(point => Vector3D.Cross(point - meshVertices[startIndex], edge).SqrNorm < sqrEpsilon))
+                        //    continue;
 
                         tempTriangleVertices[0] = triangleVertices[startIndex];
                         tempTriangleVertices[1] = meshVertices[index1];

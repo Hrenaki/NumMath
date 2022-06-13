@@ -44,7 +44,7 @@ namespace ComGeom.Meshes
                 throw new ArgumentException($"Second mesh doesn't contain material with index {otherBoundaryMaterialIndex}", nameof(otherBoundaryMaterialIndex));
 
             int i;
-            double epsilon = 1E-7;
+            double epsilon = 1E-6;
 
             LinkedList<Element> elements = new LinkedList<Element>();
             LinkedList<Element> otherElements = new LinkedList<Element>();
@@ -398,9 +398,6 @@ namespace ComGeom.Meshes
                     }
                 }
             }
-
-            //FindNewTetrahedronsForEntireFaces(otherTriangles);
-            //FindNewTetrahedronsForEntireFaces(triangles);
         }
 
         private static void BreakAdjacentFaces((Element Triangle, Element Tetrahedron, bool FromSplitted)[] facesToBreak, 
@@ -453,20 +450,6 @@ namespace ComGeom.Meshes
                     var newTetrahedron = newElements.First(tuple => !newTriangle.Indices.Except(tuple.Tetrahedron.Indices).Any()).Tetrahedron;
                     newElements.Add((newTriangle, newTetrahedron, true));
                 }
-            }
-        }
-
-        private static void FindNewTetrahedronsForEntireFaces(List<(Element Triangle, Element Tetrahedron, bool FromSplitted)> triangles)
-        {
-            for (int i = 0; i < triangles.Count; i++)
-            {
-                var triangleTuple = triangles[i];
-                if (triangleTuple.FromSplitted)
-                    continue;
-
-                int tetrahedronIndex = triangles.FindIndex(triangle => triangle.FromSplitted && !triangleTuple.Triangle.Indices.Except(triangle.Tetrahedron.Indices).Any());
-                if (tetrahedronIndex >= 0)
-                    triangles[i] = (triangleTuple.Triangle, triangles[tetrahedronIndex].Tetrahedron, false);
             }
         }
 
