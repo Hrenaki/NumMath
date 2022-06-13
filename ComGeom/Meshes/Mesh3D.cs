@@ -67,7 +67,7 @@ namespace ComGeom.Meshes
             Dictionary<int, int> equalVertexIndices = new Dictionary<int, int>();
             Dictionary<Element, Element> equalTriangles = new Dictionary<Element, Element>();
 
-            var triangles = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>();
+            var triangles = new List<(Element Triangle, Element Tetrahedron)>();
             foreach (var tetrahedron in boundaryTetrahedrons)
             {
                 var faces = elements.Where(triangle => triangle.Type == ElementType.Triangle &&
@@ -77,12 +77,12 @@ namespace ComGeom.Meshes
                 elements.Remove(tetrahedron);
                 foreach (var face in faces)
                 {
-                    triangles.Add((Triangle: face, Tetrahedron: tetrahedron, FromSplitted: false));
+                    triangles.Add((Triangle: face, Tetrahedron: tetrahedron));
                     elements.Remove(face);
                 }
             }
 
-            var otherTriangles = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>();
+            var otherTriangles = new List<(Element Triangle, Element Tetrahedron)>();
             foreach (var tetrahedron in otherBoundaryTetrahedrons)
             {
                 var faces = otherElements.Where(triangle => triangle.Type == ElementType.Triangle &&
@@ -92,7 +92,7 @@ namespace ComGeom.Meshes
                 otherElements.Remove(tetrahedron);
                 foreach (var face in faces)
                 {
-                    otherTriangles.Add((Triangle: face, Tetrahedron: tetrahedron, FromSplitted: false));
+                    otherTriangles.Add((Triangle: face, Tetrahedron: tetrahedron));
                     otherElements.Remove(face);
                 }
             }
@@ -221,8 +221,8 @@ namespace ComGeom.Meshes
             }
         }
 
-        private static void GetSplittedBoundaryTetrahedrons(List<(Element Triangle, Element Tetrahedron, bool FromSplitted)> triangles, List<Vector3D> vertices,
-                                                            List<(Element Triangle, Element Tetrahedron, bool FromSplitted)> otherTriangles, List<Vector3D> otherVertices,
+        private static void GetSplittedBoundaryTetrahedrons(List<(Element Triangle, Element Tetrahedron)> triangles, List<Vector3D> vertices,
+                                                            List<(Element Triangle, Element Tetrahedron)> otherTriangles, List<Vector3D> otherVertices,
                                                             Dictionary<int, int> equalVertexIndices, Dictionary<Element, Element> equalTriangles,
                                                             double epsilon)
         {
@@ -235,7 +235,6 @@ namespace ComGeom.Meshes
 
             Element triangle, tetrahedron;
             Element otherTriangle, otherTetrahedron;
-            bool fromSplitted, otherFromSplitted;
 
             Vector3D[] localVertices = new Vector3D[triangleVertexCount];
             Vector3D[] triangleEdges = new Vector3D[triangleVertexCount];
@@ -247,14 +246,14 @@ namespace ComGeom.Meshes
             var otherVertexInfos = new (int vertexLocalIndex, (bool belongs, int belongsToEdge, int equalToVertex) info)[triangleVertexCount];
             (int StartIndex, int EndIndex, Vector3D Line)[] intersectionWindowEdges;
 
-            List<(Element Triangle, Element Tetrahedron, bool FromSplitted)> newElements;
+            List<(Element Triangle, Element Tetrahedron)> newElements;
 
             // OtherTriangle - Triangle
             List<(int OtherTriangle, int Triangle)> notIntersectTriangles = new List<(int OtherTriangle, int Triangle)>(100);
 
             for (i = 0; i < triangles.Count; i++)
             {
-                (triangle, tetrahedron, fromSplitted) = triangles[i];
+                (triangle, tetrahedron) = triangles[i];
                 if (equalTriangles.Values.Contains(triangle))
                     continue;
 
@@ -270,7 +269,7 @@ namespace ComGeom.Meshes
 
                 for (j = 0; j < otherTriangles.Count; j++)
                 {
-                    (otherTriangle, otherTetrahedron, otherFromSplitted) = otherTriangles[j];
+                    (otherTriangle, otherTetrahedron) = otherTriangles[j];
                     if (equalTriangles.ContainsKey(otherTriangle))
                         continue;
 
@@ -400,10 +399,10 @@ namespace ComGeom.Meshes
             }
         }
 
-        private static void BreakAdjacentFaces((Element Triangle, Element Tetrahedron, bool FromSplitted)[] facesToBreak, 
+        private static void BreakAdjacentFaces((Element Triangle, Element Tetrahedron)[] facesToBreak, 
                                                Vector3D[] triangleVertices, Vector3D[] triangleEdges,
                                                List<Vector3D> vertices, List<Vector3D> intersectionWindow,
-                                               List<(Element Triangle, Element Tetrahedron, bool FromSplitted)> newElements, double epsilon)
+                                               List<(Element Triangle, Element Tetrahedron)> newElements, double epsilon)
         {
             double sqrEpsilon = epsilon * epsilon;
 
@@ -424,9 +423,9 @@ namespace ComGeom.Meshes
 
                 if (belongPointInfos.Where(info => info.Info.Belongs).All(info => info.Info.EqualToVertex != -1))
                 {
-                    int tetrahedronIndex = newElements.FindIndex(triangle => triangle.FromSplitted && !faceTriangle.Indices.Except(triangle.Tetrahedron.Indices).Any());
+                    int tetrahedronIndex = newElements.FindIndex(triangle => !faceTriangle.Indices.Except(triangle.Tetrahedron.Indices).Any());
                     if (tetrahedronIndex >= 0)
-                        newElements.Add((faceTriangle, newElements[tetrahedronIndex].Tetrahedron, false));
+                        newElements.Add((faceTriangle, newElements[tetrahedronIndex].Tetrahedron));
 
                     continue;
                 }
@@ -448,7 +447,7 @@ namespace ComGeom.Meshes
                 {
                     var newTriangle = faceTriangle.CopyWithNewIndices(new int[] { edgePoints[n].Index, otherVertexIndex, edgePoints[n + 1].Index });
                     var newTetrahedron = newElements.First(tuple => !newTriangle.Indices.Except(tuple.Tetrahedron.Indices).Any()).Tetrahedron;
-                    newElements.Add((newTriangle, newTetrahedron, true));
+                    newElements.Add((newTriangle, newTetrahedron));
                 }
             }
         }

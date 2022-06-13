@@ -296,36 +296,35 @@ namespace ComGeom
             return new Element(element.Type, element.MaterialNumber, indices);
         }
 
-        public static List<(Element Triangle, Element Tetrahedron, bool FromSplitted)> TriangulateTriangle(Element triangle, Element tetrahedron,
-                                                                                                           Vector3D[] triangleVertices,
-                                                                                                           List<Vector3D> meshVertices,
-                                                                                                           List<Vector3D> intersectionWindow,
-                                                                                                           (int StartIndex, int EndIndex, Vector3D Line)[] intersectionWindowEdges,
-                                                                                                           double epsilon)
+        public static List<(Element Triangle, Element Tetrahedron)> TriangulateTriangle(Element triangle, Element tetrahedron,
+                                                                                        Vector3D[] triangleVertices,
+                                                                                        List<Vector3D> meshVertices,
+                                                                                        List<Vector3D> intersectionWindow,
+                                                                                        (int StartIndex, int EndIndex, Vector3D Line)[] intersectionWindowEdges,
+                                                                                        double epsilon)
         {
             double sqrEpsilon = epsilon * epsilon;
             int index;
 
             int intersectionWindowCount = intersectionWindow.Count;
 
-            if(intersectionWindowCount < 1)
-                return new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>() { new(triangle, tetrahedron, false) };
+            if (intersectionWindowCount < 1)
+                return new List<(Element Triangle, Element Tetrahedron)>() { new(triangle, tetrahedron) };
 
             List<int> windowIndices = intersectionWindow.Select(windowVertex => meshVertices.FindIndex(0, meshVertices.Count, vertex => vertex.SqrDistance(windowVertex) < sqrEpsilon)).ToList();
 
-            if(intersectionWindowCount <= 3 && !windowIndices.Except(triangle.Indices).Any())
-                return new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)> { new(triangle, tetrahedron, false) };
+            if (intersectionWindowCount <= 3 && !windowIndices.Except(triangle.Indices).Any())
+                return new List<(Element Triangle, Element Tetrahedron)> { new(triangle, tetrahedron) };
 
             var newEdges = GetNewEdges(intersectionWindow, intersectionWindowEdges, triangleVertices, epsilon);
 
             int tetrahedronTopVertexIndex = tetrahedron.Indices.Except(triangle.Indices).Single();
-            var newElements = new List<(Element Triangle, Element Tetrahedron, bool FromSplitted)>();
+            var newElements = new List<(Element Triangle, Element Tetrahedron)>();
 
             for (index = 1; index < intersectionWindowCount - 1; index++)
             {
                 newElements.Add((CopyElementWithNewIndices(triangle, new int[] { windowIndices[0], windowIndices[index], windowIndices[index + 1] }),
-                                 CopyElementWithNewIndices(tetrahedron, new int[] { windowIndices[0], windowIndices[index], windowIndices[index + 1], tetrahedronTopVertexIndex }),
-                                 true));
+                                 CopyElementWithNewIndices(tetrahedron, new int[] { windowIndices[0], windowIndices[index], windowIndices[index + 1], tetrahedronTopVertexIndex })));
             }
 
             Vector3D[] tempTriangleVertices = new Vector3D[3];
@@ -360,8 +359,7 @@ namespace ComGeom
                         }
 
                         newElements.Add((CopyElementWithNewIndices(triangle, new int[] { index1, triangle.Indices[k], index2 }),
-                                         CopyElementWithNewIndices(tetrahedron, new int[] { index1, triangle.Indices[k], index2, tetrahedronTopVertexIndex }),
-                                         true));
+                                         CopyElementWithNewIndices(tetrahedron, new int[] { index1, triangle.Indices[k], index2, tetrahedronTopVertexIndex })));
                     }
                 }
             }
@@ -408,8 +406,7 @@ namespace ComGeom
                         }
 
                         newElements.Add((CopyElementWithNewIndices(triangle, new int[] { triangle.Indices[startIndex], index1, triangle.Indices[endIndex] }),
-                                         CopyElementWithNewIndices(tetrahedron, new int[] { triangle.Indices[startIndex], index1, triangle.Indices[endIndex], tetrahedronTopVertexIndex }),
-                                         true));
+                                         CopyElementWithNewIndices(tetrahedron, new int[] { triangle.Indices[startIndex], index1, triangle.Indices[endIndex], tetrahedronTopVertexIndex })));
                     }
                 }
             }
