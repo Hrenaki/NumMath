@@ -51,6 +51,7 @@
     <Compile Include="Matrices\FullMatrix.cs" />
     <Compile Include="Solvers\GaussSolver.cs" />
     <Compile Include="Solvers\LUSolver.cs" />
+    <Compile Include="Splines\CubicInterpolation3DSpline.cs" />
     <Compile Include="Splines\InterpolationSpline.cs" />
     <Compile Include="Solvers\JacobiSolver.cs" />
     <Compile Include="Solvers\LDLTSolver.cs" />
@@ -63,6 +64,8 @@
     <Compile Include="Splines\ISpline1D.cs" />
     <Compile Include="Vectors\Vector.cs" />
     <Compile Include="Vectors\Vector2.cs" />
+    <Compile Include="Vectors\Vector3.cs" />
+    <Compile Include="Vectors\Vector4.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
